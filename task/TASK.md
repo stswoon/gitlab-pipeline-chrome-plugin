@@ -1,7 +1,3 @@
-Agent Mode = Multitask
-
-/multi-model-review 
-
 Создать Chrome Plugin для Gitlab Pipelines
 
 ## Часть 1
