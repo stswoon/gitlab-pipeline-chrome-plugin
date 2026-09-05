@@ -1,10 +1,11 @@
-import { createProfile, deleteProfile } from '../shared/profiles';
+import { addEmptyRow, createProfile, deleteProfile, removeRowAt, tryUpdateRowKey, updateRowValue } from '../shared/profiles';
 import type { Profile, StorageShape } from '../shared/query';
 import { loadStorage, saveStorage } from './storage';
 import { displayProfileName, isApplyDisabled } from './ui-state';
 
 const APPLY_NOT_PROJECT =
   'This tab is not a GitLab project. Open a project page and try Apply again.';
+const DUPLICATE_KEY = 'Keys must be unique.';
 
 let state: StorageShape = { profiles: [], selectedProfileId: null };
 let errorText = '';
@@ -32,6 +33,61 @@ async function persist(): Promise<void> {
   await saveStorage(state);
 }
 
+function renderRows(): void {
+  const list = document.getElementById('rows-list') as HTMLElement;
+  list.replaceChildren();
+  const profile = selectedProfile();
+  if (!profile) {
+    return;
+  }
+  profile.params.forEach((param, index) => {
+    const row = document.createElement('div');
+    row.className = 'kv-row';
+
+    const keyInput = document.createElement('input');
+    keyInput.type = 'text';
+    keyInput.value = param.key;
+    keyInput.setAttribute('aria-label', 'Key');
+    keyInput.addEventListener('input', async () => {
+      const result = tryUpdateRowKey(profile.params, index, keyInput.value);
+      if (result.error) {
+        keyInput.value = profile.params[index]!.key;
+        setError(result.error);
+        return;
+      }
+      profile.params = result.params;
+      if (errorText === DUPLICATE_KEY) {
+        setError('');
+      }
+      clearApplyError();
+      await persist();
+    });
+
+    const valueInput = document.createElement('input');
+    valueInput.type = 'text';
+    valueInput.value = param.value;
+    valueInput.setAttribute('aria-label', 'Value');
+    valueInput.addEventListener('input', async () => {
+      profile.params = updateRowValue(profile.params, index, valueInput.value);
+      clearApplyError();
+      await persist();
+    });
+
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.textContent = 'Remove';
+    remove.addEventListener('click', async () => {
+      profile.params = removeRowAt(profile.params, index);
+      clearApplyError();
+      await persist();
+      render();
+    });
+
+    row.append(keyInput, valueInput, remove);
+    list.appendChild(row);
+  });
+}
+
 function render(): void {
   const app = document.getElementById('app') as HTMLElement;
   const apply = document.getElementById('btn-apply') as HTMLButtonElement;
@@ -53,6 +109,7 @@ function render(): void {
     select.value = state.selectedProfileId;
   }
   name.value = selectedProfile()?.name ?? '';
+  renderRows();
 }
 
 async function init(): Promise<void> {
@@ -98,6 +155,17 @@ async function init(): Promise<void> {
     if (option) {
       option.textContent = displayProfileName(profile.name);
     }
+  });
+
+  document.getElementById('btn-add-row')?.addEventListener('click', async () => {
+    const profile = selectedProfile();
+    if (!profile) {
+      return;
+    }
+    profile.params = addEmptyRow(profile.params);
+    clearApplyError();
+    await persist();
+    render();
   });
 }
 
