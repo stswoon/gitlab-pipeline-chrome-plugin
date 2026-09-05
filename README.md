@@ -1,6 +1,7 @@
 # GitLab Pipeline Prefill
 
-Chrome extension (Manifest V3) that prefills GitLab’s **Run new pipeline** form from saved profiles or a query string. It never clicks **Run pipeline**, **Cancel**, **Select inputs**, or **Preview inputs**.
+Chrome extension (Manifest V3) that prefills GitLab’s **Run new pipeline** form from saved profiles or a query string.
+It never clicks **Run pipeline**, **Cancel**, **Select inputs**, or **Preview inputs**.
 
 ## Build and load unpacked
 
@@ -10,7 +11,8 @@ npm test
 npm run build
 ```
 
-In Chrome: open `chrome://extensions`, enable **Developer mode**, choose **Load unpacked**, and select the `dist/` folder.
+In Chrome: open `chrome://extensions`, enable **Developer mode**, choose **Load unpacked**, and select the `dist/`
+folder.
 
 ## Query syntax
 
@@ -22,13 +24,15 @@ Apply navigates the active tab to `/-/pipelines/new` with profile values as quer
 
 ## Privacy
 
-Profile values are stored **unencrypted** in `chrome.storage.local`. Apply puts every value in the page URL, so they appear in browser history, the omnibox, and GitLab or proxy access logs. Do not store secrets in profiles.
+Profile values are stored **unencrypted** in `chrome.storage.local`. Apply puts every value in the page URL, so they
+appear in browser history, the omnibox, and GitLab or proxy access logs. Do not store secrets in profiles.
 
 ## Verification
 
 Automated tests use static DOM fixtures; they do not hit gitlab.com.
 
-Unpacked Chrome loading and an authenticated pass on `/-/pipelines/new?...` (spec §10.2) were **not** run in this repo’s automation. After `npm run build`, load `dist/` unpacked and run one real fill on your GitLab instance.
+Unpacked Chrome loading and an authenticated pass on `/-/pipelines/new?...` (spec §10.2) were **not** run in this repo’s
+automation. After `npm run build`, load `dist/` unpacked and run one real fill on your GitLab instance.
 
 
 ---
