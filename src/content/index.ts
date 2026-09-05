@@ -1,5 +1,5 @@
 import { parseQuery } from '../shared/query';
-import { setBranchIfNeeded } from './branch';
+import { fillForm } from './fill';
 import { hasQueryParams, isRunNewPipelinePage } from './match';
 import { waitForForm } from './wait';
 
@@ -30,10 +30,7 @@ import { waitForForm } from './wait';
       if (params.length === 0) {
         return;
       }
-      const branch = params.find((param) => param.key === '_branch');
-      if (branch) {
-        await setBranchIfNeeded(document, branch.value);
-      }
+      await fillForm(document, params);
     } finally {
       done = true;
       filling = false;
