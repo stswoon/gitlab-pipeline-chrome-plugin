@@ -9,6 +9,8 @@ export default defineConfig({
   build: {
     emptyOutDir: false,
     outDir: 'dist',
+    sourcemap: 'inline',
+    minify: false,
     rollupOptions: {
       input: resolve(root, 'src/content/index.ts'),
       output: {

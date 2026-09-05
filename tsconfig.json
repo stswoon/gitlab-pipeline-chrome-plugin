@@ -9,5 +9,9 @@
     "skipLibCheck": true,
     "types": ["chrome"]
   },
-  "include": ["src/**/*.ts", "tests/**/*.ts", "vite.config.ts", "vite.content.config.ts"]
+  "include": [
+    "src/**/*.ts",
+    "vite.popup.config.ts",
+    "vite.content.config.ts"
+  ]
 }
