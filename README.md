@@ -30,6 +30,11 @@ Automated tests use static DOM fixtures; they do not hit gitlab.com.
 
 Unpacked Chrome loading and an authenticated pass on `/-/pipelines/new?...` (spec §10.2) were **not** run in this repo’s automation. After `npm run build`, load `dist/` unpacked and run one real fill on your GitLab instance.
 
+
+---
+
+![](proof.png)
+
 ---
 
 Agent workflow notes:
@@ -37,3 +42,5 @@ Agent workflow notes:
 1. Agent Mode = Multitask
 2. `/brainstorming @TASK.md`
 3. `/subagent-driven-development @TASK.md @2026-09-05-gitlab-pipeline-chrome-plugin.md`
+
+
