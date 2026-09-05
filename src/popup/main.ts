@@ -3,16 +3,15 @@ import {
   applyBulkInput,
   displayBulkText,
   isValidBulkText,
-  type Profile,
-  type StorageShape,
 } from '../shared/query';
 import { APPLY_NOT_PROJECT, decideApplyUrl } from './apply-url';
 import { loadStorage, saveStorage } from './storage';
 import { displayProfileName, isApplyDisabled, syncPopupShell } from './ui-state';
+import {Profile, ProfileStorage} from "../shared/types";
 
 const INVALID_BULK = 'Invalid query string.';
 
-let state: StorageShape = { profiles: [], selectedProfileId: null };
+let state: ProfileStorage = { profiles: [], selectedProfileId: null };
 let bulkValid = true;
 let errorText = '';
 

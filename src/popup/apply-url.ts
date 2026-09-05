@@ -1,4 +1,5 @@
-import { buildPipelineNewUrl, type Param } from '../shared/query';
+import { buildPipelineNewUrl} from '../shared/query';
+import {Param} from "../shared/types";
 
 export const APPLY_NOT_PROJECT = 'This tab is not a GitLab project. Open a project page and try Apply again.';
 

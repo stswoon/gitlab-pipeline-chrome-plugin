@@ -1,16 +1,4 @@
-export type Param = { key: string; value: string };
-
-export type Profile = {
-  id: string;
-  name: string;
-  params: Param[];
-  bulkText?: string;
-};
-
-export type StorageShape = {
-  profiles: Profile[];
-  selectedProfileId: string | null;
-};
+import {Param, Profile} from "./types";
 
 export function parseQuery(input: string): Param[] {
   let source = input.trim();

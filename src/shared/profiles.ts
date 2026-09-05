@@ -1,4 +1,4 @@
-import type { Param, Profile, StorageShape } from './query';
+import type {Param, Profile, ProfileStorage} from './types';
 
 function isParam(value: unknown): value is Param {
   if (value === null || typeof value !== 'object') {
@@ -30,41 +30,16 @@ export function nextDefaultName(profiles: ReadonlyArray<Pick<Profile, 'name'>>):
   return `Profile ${n}`;
 }
 
-export function normalizeStorage(raw: unknown): { value: StorageShape; didRepair: boolean } {
-  const obj = raw !== null && typeof raw === 'object' ? (raw as Record<string, unknown>) : {};
-  const incoming = Array.isArray(obj.profiles) ? obj.profiles : [];
-  const profiles = incoming.filter(isProfile);
-  let didRepair = !Array.isArray(obj.profiles) || profiles.length !== incoming.length;
-
-  let selectedProfileId: string | null = null;
-  if (obj.selectedProfileId === null || obj.selectedProfileId === undefined) {
-    selectedProfileId = null;
-  } else if (typeof obj.selectedProfileId === 'string') {
-    selectedProfileId = obj.selectedProfileId;
-  } else {
-    selectedProfileId = null;
-    didRepair = true;
-  }
-
-  if (profiles.length === 0) {
-    const seeded = createProfile([]);
-    return {
-      value: { profiles: seeded.profiles, selectedProfileId: seeded.created.id },
-      didRepair: true,
-    };
-  }
-
-  if (selectedProfileId !== null && !profiles.some((profile) => profile.id === selectedProfileId)) {
-    selectedProfileId = profiles[0]?.id ?? null;
-    didRepair = true;
-  }
-
-  if (selectedProfileId === null) {
-    selectedProfileId = profiles[0]!.id;
-    didRepair = true;
-  }
-
-  return { value: { profiles, selectedProfileId }, didRepair };
+export function normalizeStorage(raw: unknown): { value: ProfileStorage; didRepair: boolean } {
+    if (!raw) {
+        const initProfiles = createProfile([]);
+        return {
+            value: {profiles: initProfiles.profiles, selectedProfileId: initProfiles.created.id},
+            didRepair: true,
+        };
+    } else {
+        return {value: raw as ProfileStorage, didRepair: false};
+    }
 }
 
 export function createProfile(profiles: Profile[]): { profiles: Profile[]; created: Profile } {
