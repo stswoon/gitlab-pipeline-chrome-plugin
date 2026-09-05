@@ -45,3 +45,10 @@ export function serializeParams(params: Param[]): string {
   const encoded = search.toString();
   return encoded === '' ? '' : `?${encoded}`;
 }
+
+export function splitListValues(raw: string): string[] {
+  return raw
+    .split(',')
+    .map((token) => token.trim())
+    .filter((token) => token !== '');
+}
