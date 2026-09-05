@@ -15,7 +15,7 @@ export default defineConfig({
         format: 'iife',
         name: 'unusedGitLabPipelinePrefill',
         extend: true,
-        entryFileNames: 'content.js',
+        entryFileNames: 'gitlab-pipeline-prefill-content.js',
         inlineDynamicImports: true,
       },
     },

@@ -1,4 +1,4 @@
 /.idea/
-node_modules/
-dist/
-.worktrees/
+/node_modules/
+/dist/
+/.worktrees/
