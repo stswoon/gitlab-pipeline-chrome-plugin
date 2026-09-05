@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GitLab Pipeline Prefill</title>
+    <link rel="stylesheet" href="./popup.css" />
+  </head>
+  <body>
+    <div id="app" class="is-empty">
+      <div id="profile-switcher-wrap">
+        <label for="profile-select">Profile</label>
+        <select id="profile-select"></select>
+      </div>
+      <div id="name-wrap">
+        <label for="profile-name">Name</label>
+        <input id="profile-name" type="text" />
+      </div>
+      <div class="toolbar">
+        <button id="btn-new-profile" type="button">New profile</button>
+        <button id="btn-delete" type="button" disabled>Delete</button>
+      </div>
+      <div id="view-toggle-wrap">
+        <div id="view-toggle">
+          <button id="btn-view-rows" type="button" aria-pressed="true">Rows</button>
+          <button id="btn-view-bulk" type="button" aria-pressed="false">Bulk</button>
+        </div>
+      </div>
+      <div id="rows-view">
+        <div id="rows-list"></div>
+        <button id="btn-add-row" type="button">Add row</button>
+      </div>
+      <div id="bulk-view" hidden>
+        <textarea id="bulk-text" spellcheck="false"></textarea>
+      </div>
+      <div id="error-line"></div>
+      <button id="btn-apply" type="button" disabled>Apply</button>
+    </div>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

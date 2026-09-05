@@ -1,0 +1,74 @@
+html,
+body {
+  margin: 0;
+  width: 400px;
+  font: 13px/1.4 system-ui, sans-serif;
+  color: #1f1f1f;
+}
+
+#app {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+}
+
+.is-empty #profile-switcher-wrap,
+.is-empty #name-wrap,
+.is-empty #btn-delete,
+.is-empty #view-toggle-wrap,
+.is-empty #rows-view,
+.is-empty #bulk-view {
+  display: none;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+input[type='text'],
+select,
+textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 6px 8px;
+}
+
+textarea {
+  min-height: 120px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.toolbar,
+#view-toggle {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+#view-toggle button[aria-pressed='true'] {
+  font-weight: 700;
+}
+
+.kv-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+#error-line {
+  min-height: 1.2em;
+  color: #c62828;
+}
+
+#btn-apply {
+  font-weight: 700;
+}
+
+button:disabled {
+  opacity: 0.5;
+}
