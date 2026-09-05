@@ -1,5 +1,4 @@
 import { setNativeValue, sleep, textOf } from './dom';
-import { listSelection, parseBooleanQuery } from './fill-rules';
 import { collectListboxItems, optionValue, selectListboxOption } from './listbox';
 
 export function findInputRow(doc: Document, name: string): HTMLElement | null {
@@ -174,3 +173,27 @@ export async function applyInputWidget(row: HTMLElement, raw: string): Promise<b
   setNativeValue(el, raw);
   return true;
 }
+
+function listSelection(raw: string, existingOptions: string[]): string[] {
+    const tokens = splitListValues(raw);
+    return existingOptions.filter((option) => tokens.includes(option));
+}
+
+function splitListValues(raw: string): string[] {
+    return raw
+        .split(',')
+        .map((token) => token.trim())
+        .filter((token) => token !== '');
+}
+
+function parseBooleanQuery(value: string): boolean | null {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === 'true') {
+        return true;
+    }
+    if (normalized === 'false') {
+        return false;
+    }
+    return null;
+}
+

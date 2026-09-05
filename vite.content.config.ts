@@ -9,13 +9,15 @@ export default defineConfig({
   build: {
     emptyOutDir: false,
     outDir: 'dist',
+    sourcemap: 'inline',
+    minify: false,
     rollupOptions: {
       input: resolve(root, 'src/content/index.ts'),
       output: {
         format: 'iife',
         name: 'unusedGitLabPipelinePrefill',
         extend: true,
-        entryFileNames: 'content.js',
+        entryFileNames: 'gitlab-pipeline-prefill-content.js',
         inlineDynamicImports: true,
       },
     },

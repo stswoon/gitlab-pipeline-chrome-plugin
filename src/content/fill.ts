@@ -1,8 +1,7 @@
-import type { Param } from '../shared/query';
 import { setBranchIfNeeded } from './branch';
-import { isSkippedFillKey } from './fill-rules';
 import { addVariable, findVariableRow, isFileVariableRow, setVariableRow } from './variables';
 import { applyInputWidget, findInputRow } from './widgets';
+import {Param} from "../shared/types";
 
 export async function fillForm(doc: Document, params: Param[]): Promise<void> {
   const branch = params.find((param) => param.key === '_branch');
@@ -44,3 +43,8 @@ export async function fillForm(doc: Document, params: Param[]): Promise<void> {
     }
   }
 }
+
+export function isSkippedFillKey(key: string): boolean {
+    return key === '' || key.startsWith('_');
+}
+
