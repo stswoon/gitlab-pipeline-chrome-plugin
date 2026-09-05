@@ -1,4 +1,4 @@
-import {normalizeStorage} from '../shared/profiles';
+import {normalizeStorage} from './profiles';
 import {ProfileStorage} from "../shared/types";
 
 export async function saveStorage(data: ProfileStorage): Promise<void> {

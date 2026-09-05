@@ -1,4 +1,4 @@
-import { createProfile, deleteProfile } from '../shared/profiles';
+import { createProfile, deleteProfile } from './profiles';
 import {
   applyBulkInput,
   displayBulkText,
@@ -91,8 +91,8 @@ async function init(): Promise<void> {
   render();
 
   document.getElementById('btn-new-profile')?.addEventListener('click', async () => {
-    const result = createProfile(state.profiles);
-    state = { profiles: result.profiles, selectedProfileId: result.created.id };
+    const newProfile = createProfile(state.profiles);
+    state = { profiles: [...state.profiles, newProfile], selectedProfileId: newProfile.id };
     bulkValid = true;
     if (errorText === INVALID_BULK) {
       setError('');
