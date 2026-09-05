@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "prod": "npm run build && npm run tests",
     "typecheck": "tsc --noEmit",
     "test": "tsc --noEmit && vitest run",
     "test:watch": "vitest",
