@@ -1,41 +1,45 @@
-import { parseQuery } from '../shared/query';
-import { fillForm } from './fill';
-import { hasQueryParams, isRunNewPipelinePage } from './match';
-import { waitForForm } from './wait';
+import {fillForm} from './fill';
+import {hasQueryParams, isOnNewPipelinePage} from './helpers';
+import {waitForForm} from './wait';
+import {parseQuery} from "../shared/query";
 
-(function gitlabPipelinePrefill(): void {
-  let filling = false;
-  let done = false;
+async function gitlabPipelinePrefill() {
+    let filling = false;
+    let done = false;
 
-  if (!isRunNewPipelinePage(window.location)) {
-    return;
-  }
-  if (!hasQueryParams(window.location.search)) {
-    return;
-  }
-  if (filling || done) {
-    return;
-  }
-
-  filling = true;
-
-  void (async () => {
-    try {
-      const ready = await waitForForm(document, 15_000);
-      if (!ready) {
-        console.warn('[GitLab Pipeline Prefill] Run new pipeline form not ready within 15s');
+    if (!isOnNewPipelinePage(window.location)) {
         return;
-      }
-      const params = parseQuery(window.location.search);
-      if (params.length === 0) {
-        return;
-      }
-      await fillForm(document, params);
-    } catch {
-      /* silent per spec */
-    } finally {
-      done = true;
-      filling = false;
     }
-  })();
-})();
+    if (!hasQueryParams(window.location.search)) {
+        return;
+    }
+    if (filling || done) {
+        return;
+    }
+
+    filling = true;
+
+    console.info('[GitLab Pipeline Prefill] Start fill new pipeline form');
+    try {
+        const ready = await waitForForm(document, 15_000);
+        if (!ready) {
+            console.error('[GitLab Pipeline Prefill] Run new pipeline form not ready within 15s');
+            return;
+        }
+        const params = parseQuery(window.location.search);
+        if (params.length === 0) {
+            return;
+        }
+        await fillForm(document, params);
+        console.info('[GitLab Pipeline Prefill] Successfully finish filling new pipeline form');
+    } catch (e) {
+        console.error('[GitLab Pipeline Prefill] Error during fill new pipeline form: ', e);
+    } finally {
+        done = true; //TODO: remove
+        filling = false;
+    }
+}
+
+gitlabPipelinePrefill();
+
+
