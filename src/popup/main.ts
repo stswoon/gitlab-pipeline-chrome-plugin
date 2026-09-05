@@ -13,11 +13,10 @@ import {
   type Profile,
   type StorageShape,
 } from '../shared/query';
+import { APPLY_NOT_PROJECT, decideApplyUrl } from './apply-url';
 import { loadStorage, saveStorage } from './storage';
 import { displayProfileName, isApplyDisabled } from './ui-state';
 
-const APPLY_NOT_PROJECT =
-  'This tab is not a GitLab project. Open a project page and try Apply again.';
 const DUPLICATE_KEY = 'Keys must be unique.';
 const INVALID_BULK = 'Invalid query string.';
 
@@ -254,6 +253,25 @@ async function init(): Promise<void> {
       state.profiles.length,
       false,
     );
+  });
+
+  document.getElementById('btn-apply')?.addEventListener('click', async () => {
+    const profile = selectedProfile();
+    if (!profile) {
+      return;
+    }
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab?.id) {
+      setError(APPLY_NOT_PROJECT);
+      return;
+    }
+    const decided = decideApplyUrl(tab.url, profile.params);
+    if ('error' in decided) {
+      setError(decided.error);
+      return;
+    }
+    setError('');
+    await chrome.tabs.update(tab.id, { url: decided.url });
   });
 }
 
