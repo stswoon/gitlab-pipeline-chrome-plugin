@@ -1,13 +1,31 @@
-import { addEmptyRow, createProfile, deleteProfile, removeRowAt, tryUpdateRowKey, updateRowValue } from '../shared/profiles';
-import type { Profile, StorageShape } from '../shared/query';
+import {
+  addEmptyRow,
+  createProfile,
+  deleteProfile,
+  removeRowAt,
+  tryUpdateRowKey,
+  updateRowValue,
+} from '../shared/profiles';
+import {
+  isValidBulkText,
+  parseQuery,
+  serializeParams,
+  type Profile,
+  type StorageShape,
+} from '../shared/query';
 import { loadStorage, saveStorage } from './storage';
 import { displayProfileName, isApplyDisabled } from './ui-state';
 
 const APPLY_NOT_PROJECT =
   'This tab is not a GitLab project. Open a project page and try Apply again.';
 const DUPLICATE_KEY = 'Keys must be unique.';
+const INVALID_BULK = 'Invalid query string.';
+
+type ViewMode = 'rows' | 'bulk';
 
 let state: StorageShape = { profiles: [], selectedProfileId: null };
+let view: ViewMode = 'rows';
+let bulkValid = true;
 let errorText = '';
 
 function selectedProfile(): Profile | null {
@@ -31,6 +49,12 @@ function clearApplyError(): void {
 
 async function persist(): Promise<void> {
   await saveStorage(state);
+}
+
+function syncBulkTextarea(): void {
+  const textarea = document.getElementById('bulk-text') as HTMLTextAreaElement;
+  const profile = selectedProfile();
+  textarea.value = profile ? serializeParams(profile.params) : '';
 }
 
 function renderRows(): void {
@@ -94,9 +118,11 @@ function render(): void {
   const del = document.getElementById('btn-delete') as HTMLButtonElement;
   const select = document.getElementById('profile-select') as HTMLSelectElement;
   const name = document.getElementById('profile-name') as HTMLInputElement;
+  const rowsView = document.getElementById('rows-view') as HTMLElement;
+  const bulkView = document.getElementById('bulk-view') as HTMLElement;
   const empty = state.profiles.length === 0;
   app.classList.toggle('is-empty', empty);
-  apply.disabled = isApplyDisabled(state.profiles.length, false);
+  apply.disabled = isApplyDisabled(state.profiles.length, view === 'bulk' && !bulkValid);
   del.disabled = selectedProfile() === null;
   select.innerHTML = '';
   for (const profile of state.profiles) {
@@ -109,16 +135,27 @@ function render(): void {
     select.value = state.selectedProfileId;
   }
   name.value = selectedProfile()?.name ?? '';
+  rowsView.hidden = view !== 'rows';
+  bulkView.hidden = view !== 'bulk';
+  document.getElementById('btn-view-rows')?.setAttribute('aria-pressed', String(view === 'rows'));
+  document.getElementById('btn-view-bulk')?.setAttribute('aria-pressed', String(view === 'bulk'));
   renderRows();
 }
 
 async function init(): Promise<void> {
   state = await loadStorage();
+  view = 'rows';
+  bulkValid = true;
   render();
 
   document.getElementById('btn-new-profile')?.addEventListener('click', async () => {
     const result = createProfile(state.profiles);
     state = { profiles: result.profiles, selectedProfileId: result.created.id };
+    view = 'rows';
+    bulkValid = true;
+    if (errorText === INVALID_BULK) {
+      setError('');
+    }
     clearApplyError();
     await persist();
     render();
@@ -130,6 +167,11 @@ async function init(): Promise<void> {
     }
     const result = deleteProfile(state.profiles, state.selectedProfileId, state.selectedProfileId);
     state = result;
+    view = 'rows';
+    bulkValid = true;
+    if (errorText === INVALID_BULK) {
+      setError('');
+    }
     clearApplyError();
     await persist();
     render();
@@ -137,9 +179,16 @@ async function init(): Promise<void> {
 
   document.getElementById('profile-select')?.addEventListener('change', async (event) => {
     state.selectedProfileId = (event.target as HTMLSelectElement).value;
+    bulkValid = true;
+    if (errorText === INVALID_BULK) {
+      setError('');
+    }
     clearApplyError();
     await persist();
     render();
+    if (view === 'bulk') {
+      syncBulkTextarea();
+    }
   });
 
   document.getElementById('profile-name')?.addEventListener('input', async (event) => {
@@ -166,6 +215,45 @@ async function init(): Promise<void> {
     clearApplyError();
     await persist();
     render();
+  });
+
+  document.getElementById('btn-view-rows')?.addEventListener('click', () => {
+    if (view === 'bulk' && !bulkValid) {
+      return;
+    }
+    view = 'rows';
+    render();
+  });
+
+  document.getElementById('btn-view-bulk')?.addEventListener('click', () => {
+    view = 'bulk';
+    render();
+    syncBulkTextarea();
+  });
+
+  document.getElementById('bulk-text')?.addEventListener('input', async (event) => {
+    const raw = (event.target as HTMLTextAreaElement).value;
+    const profile = selectedProfile();
+    if (!profile) {
+      return;
+    }
+    if (!isValidBulkText(raw)) {
+      bulkValid = false;
+      setError(INVALID_BULK);
+      (document.getElementById('btn-apply') as HTMLButtonElement).disabled = true;
+      return;
+    }
+    bulkValid = true;
+    profile.params = parseQuery(raw);
+    if (errorText === INVALID_BULK) {
+      setError('');
+    }
+    clearApplyError();
+    await persist();
+    (document.getElementById('btn-apply') as HTMLButtonElement).disabled = isApplyDisabled(
+      state.profiles.length,
+      false,
+    );
   });
 }
 
