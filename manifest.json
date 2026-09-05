@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "GitLab Pipeline Prefill",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Prefill GitLab Run new pipeline from URL query parameters and named profiles.",
   "minimum_chrome_version": "116",
   "permissions": ["storage", "activeTab"],
