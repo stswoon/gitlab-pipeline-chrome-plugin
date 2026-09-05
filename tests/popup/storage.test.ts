@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { loadStorage, saveStorage } from './storage';
+import { loadStorage, saveStorage } from '../../src/popup/storage';
 
 function mockChrome(initial: Record<string, unknown> = {}): Record<string, unknown> {
   const store = { ...initial };

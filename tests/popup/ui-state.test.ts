@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { displayProfileName, isApplyDisabled } from './ui-state';
+import { displayProfileName, isApplyDisabled } from '../../src/popup/ui-state';
 
 describe('displayProfileName', () => {
   it('shows Untitled when the stored name is empty', () => {

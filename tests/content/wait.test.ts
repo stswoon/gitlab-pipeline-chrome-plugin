@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
-import { findBranchToggle, isFormReady, isInputsSectionSettled } from './wait';
+import { findBranchToggle, isFormReady, isInputsSectionSettled } from '../../src/content/wait';
 
 function pipelineFormShell(extra = ''): string {
   return `

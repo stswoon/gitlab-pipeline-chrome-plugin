@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isSkippedFillKey, listSelection, parseBooleanQuery } from './fill-rules';
+import { isSkippedFillKey, listSelection, parseBooleanQuery } from '../../src/content/fill-rules';
 
 describe('isSkippedFillKey', () => {
   it('skips empty keys and any key starting with _', () => {

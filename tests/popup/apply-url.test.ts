@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { APPLY_NOT_PROJECT, decideApplyUrl } from './apply-url';
+import { APPLY_NOT_PROJECT, decideApplyUrl } from '../../src/popup/apply-url';
 
 describe('decideApplyUrl', () => {
   it('builds a pipeline-new URL from a project tab', () => {

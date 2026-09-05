@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { addEmptyRow, removeRowAt, tryUpdateRowKey, updateRowValue } from '../shared/profiles';
+import { addEmptyRow, removeRowAt, tryUpdateRowKey, updateRowValue } from '../../src/shared/profiles';
 
 describe('rows editor rules', () => {
   it('Add row appends an empty pair', () => {

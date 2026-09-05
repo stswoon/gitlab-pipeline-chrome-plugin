@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import * as wait from './wait';
+import * as wait from '../../src/content/wait';
 
 describe('wait exports', () => {
   it('exposes form-ready helpers', () => {

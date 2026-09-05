@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { Profile } from './query';
+import type { Profile } from '../../src/shared/query';
 import {
   addEmptyRow,
   createProfile,
@@ -9,7 +9,7 @@ import {
   removeRowAt,
   tryUpdateRowKey,
   updateRowValue,
-} from './profiles';
+} from '../../src/shared/profiles';
 
 function profile(id: string, name: string): Profile {
   return { id, name, params: [] };

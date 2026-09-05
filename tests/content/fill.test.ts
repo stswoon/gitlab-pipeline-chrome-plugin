@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
 import { describe, expect, it, vi } from 'vitest';
-import type { Param } from '../shared/query';
-import { textOf } from './dom';
-import { fillForm } from './fill';
-import * as widgets from './widgets';
+import type { Param } from '../../src/shared/query';
+import { textOf } from '../../src/content/dom';
+import { fillForm } from '../../src/content/fill';
+import * as widgets from '../../src/content/widgets';
 
 function pipelineFixture(extra = ''): void {
   document.body.innerHTML = `

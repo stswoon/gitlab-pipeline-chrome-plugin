@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { hasQueryParams, isRunNewPipelinePage } from './match';
+import { hasQueryParams, isRunNewPipelinePage } from '../../src/content/match';
 
 describe('isRunNewPipelinePage', () => {
   it('matches http(s) paths ending in /-/pipelines/new regardless of host', () => {

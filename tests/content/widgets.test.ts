@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it, vi } from 'vitest';
-import { applyInputWidget, findInputRow } from './widgets';
+import { applyInputWidget, findInputRow } from '../../src/content/widgets';
 
 function dropdownRow(optionsHtml: string): HTMLElement {
   document.body.innerHTML = `

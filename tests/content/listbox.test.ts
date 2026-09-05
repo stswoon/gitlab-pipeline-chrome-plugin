@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
-import { selectListboxOption } from './listbox';
+import { selectListboxOption } from '../../src/content/listbox';
 
 function listboxFixture(optionsHtml: string): {
   toggle: HTMLElement;

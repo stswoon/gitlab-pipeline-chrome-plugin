@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isValidBulkText, parseQuery, serializeParams } from '../shared/query';
+import { isValidBulkText, parseQuery, serializeParams } from '../../src/shared/query';
 
 describe('bulk view conversion', () => {
   it('serializes current params when opening Bulk', () => {

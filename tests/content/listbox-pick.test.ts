@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { pickOptionLike } from './listbox-pick';
+import { pickOptionLike } from '../../src/content/listbox-pick';
 
 describe('pickOptionLike', () => {
   it('prefers value when value and label would pick different options', () => {

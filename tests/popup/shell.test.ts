@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
-import { syncPopupShell } from './ui-state';
+import { syncPopupShell } from '../../src/popup/ui-state';
 
 function shellElements(): {
   app: HTMLElement;

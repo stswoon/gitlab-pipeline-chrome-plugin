@@ -6,7 +6,7 @@ import {
   projectBaseFromHref,
   serializeParams,
   splitListValues,
-} from './query';
+} from '../../src/shared/query';
 
 describe('parseQuery', () => {
   it('treats a leading ? as optional', () => {
