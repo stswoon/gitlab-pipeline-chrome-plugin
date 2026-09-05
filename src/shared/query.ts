@@ -4,6 +4,7 @@ export type Profile = {
   id: string;
   name: string;
   params: Param[];
+  bulkText?: string;
 };
 
 export type StorageShape = {
@@ -76,6 +77,23 @@ export function buildPipelineNewUrl(tabHref: string, params: Param[]): string | 
     return null;
   }
   return `${base}/-/pipelines/new${serializeParams(params)}`;
+}
+
+export function displayBulkText(profile: Profile): string {
+  return profile.bulkText !== undefined ? profile.bulkText : serializeParams(profile.params);
+}
+
+export function applyBulkInput(
+  profile: Profile,
+  raw: string,
+): { profile: Profile; bulkValid: boolean } {
+  if (!isValidBulkText(raw)) {
+    return { profile: { ...profile, bulkText: raw }, bulkValid: false };
+  }
+  return {
+    profile: { ...profile, bulkText: raw, params: parseQuery(raw) },
+    bulkValid: true,
+  };
 }
 
 export function isValidBulkText(raw: string): boolean {

@@ -1,7 +1,6 @@
 import { buildPipelineNewUrl, type Param } from '../shared/query';
 
-export const APPLY_NOT_PROJECT =
-  'This tab is not a GitLab project. Open a project page and try Apply again.';
+export const APPLY_NOT_PROJECT = 'This tab is not a GitLab project. Open a project page and try Apply again.';
 
 export function decideApplyUrl(
   tabUrl: string | undefined,

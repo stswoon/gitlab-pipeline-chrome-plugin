@@ -59,6 +59,7 @@ export function createProfile(profiles: Profile[]): { profiles: Profile[]; creat
     id: crypto.randomUUID(),
     name: nextDefaultName(profiles),
     params: [],
+    bulkText: '',
   };
   return { profiles: [...profiles, created], created };
 }
