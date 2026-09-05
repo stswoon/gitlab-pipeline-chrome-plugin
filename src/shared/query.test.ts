@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseQuery, serializeParams, splitListValues } from './query';
+import { buildPipelineNewUrl, parseQuery, projectBaseFromHref, serializeParams, splitListValues } from './query';
 
 describe('parseQuery', () => {
   it('treats a leading ? as optional', () => {
@@ -96,5 +96,60 @@ describe('splitListValues', () => {
   it('returns [] for empty or only commas', () => {
     expect(splitListValues('')).toEqual([]);
     expect(splitListValues(',,,')).toEqual([]);
+  });
+});
+
+describe('projectBaseFromHref', () => {
+  it('slices a normal project URL at the first /-/ ', () => {
+    expect(projectBaseFromHref('https://gitlab.com/acme/app/-/pipelines')).toBe(
+      'https://gitlab.com/acme/app',
+    );
+  });
+
+  it('keeps nested groups', () => {
+    expect(projectBaseFromHref('https://gitlab.com/group/sub/proj/-/pipelines/new')).toBe(
+      'https://gitlab.com/group/sub/proj',
+    );
+    expect(projectBaseFromHref('https://gitlab.com/a/b/c/-/pipelines/new')).toBe(
+      'https://gitlab.com/a/b/c',
+    );
+  });
+
+  it('keeps scheme host and port', () => {
+    expect(projectBaseFromHref('https://gitlab.example.com:8443/g/p/-/jobs/1')).toBe(
+      'https://gitlab.example.com:8443/g/p',
+    );
+  });
+
+  it('ignores query and hash when finding /-/ ', () => {
+    expect(projectBaseFromHref('https://gitlab.com/acme/app/-/pipelines/new?x=1#y')).toBe(
+      'https://gitlab.com/acme/app',
+    );
+  });
+
+  it('returns null when /-/ is missing', () => {
+    expect(projectBaseFromHref('https://example.com/foo')).toBeNull();
+    expect(projectBaseFromHref('https://gitlab.com/dashboard')).toBeNull();
+  });
+});
+
+describe('buildPipelineNewUrl', () => {
+  it('returns null when the tab is not a project URL', () => {
+    expect(buildPipelineNewUrl('https://example.com/foo', [{ key: 'a', value: '1' }])).toBeNull();
+  });
+
+  it('appends /-/pipelines/new and the serialized query', () => {
+    expect(
+      buildPipelineNewUrl('https://gitlab.com/acme/app/-/merge_requests', [
+        { key: '_branch', value: 'main' },
+        { key: 'a', value: '1' },
+      ]),
+    ).toBe('https://gitlab.com/acme/app/-/pipelines/new?_branch=main&a=1');
+  });
+
+  it('omits ? when params serialize to empty', () => {
+    expect(buildPipelineNewUrl('https://gitlab.com/acme/app/-/pipelines', [])).toBe(
+      'https://gitlab.com/acme/app/-/pipelines/new',
+    );
   });
 });
