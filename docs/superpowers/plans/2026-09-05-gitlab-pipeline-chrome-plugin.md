@@ -119,7 +119,7 @@ User-facing copy (use verbatim):
 - Consumes: nothing
 - Produces: `export type Param = { key: string; value: string }`; `export type Profile = { id: string; name: string; params: Param[] }`; `export type StorageShape = { profiles: Profile[]; selectedProfileId: string | null }`; `export function parseQuery(input: string): Param[]`; `export function serializeParams(params: Param[]): string`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Replace `.gitignore` with:
 
@@ -267,13 +267,13 @@ describe('serializeParams', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npm install` then `npx vitest run src/shared/query.test.ts`
 
 Expected: FAIL with `Failed to resolve import "./query"` (or `Cannot find module './query'`).
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Create `src/shared/query.ts`:
 
@@ -327,13 +327,13 @@ export function serializeParams(params: Param[]): string {
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npx vitest run src/shared/query.test.ts`
 
 Expected: PASS (all tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add package.json package-lock.json tsconfig.json vite.config.ts .gitignore src/shared/query.ts src/shared/query.test.ts
@@ -352,7 +352,7 @@ git commit -m "feat: parse and serialize pipeline query params"
 - Consumes: nothing new
 - Produces: `export function splitListValues(raw: string): string[]`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Append to `src/shared/query.test.ts` (keep existing imports and describes; add `splitListValues` to the import):
 
@@ -459,13 +459,13 @@ describe('splitListValues', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run src/shared/query.test.ts`
 
 Expected: FAIL with `splitListValues is not exported` / `does not provide an export named 'splitListValues'`.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Append to `src/shared/query.ts` (do not change existing functions):
 
@@ -478,13 +478,13 @@ export function splitListValues(raw: string): string[] {
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npx vitest run src/shared/query.test.ts`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/shared/query.ts src/shared/query.test.ts
@@ -503,7 +503,7 @@ git commit -m "feat: split comma-separated list query values"
 - Consumes: `serializeParams(params: Param[]): string`
 - Produces: `export function projectBaseFromHref(tabHref: string): string | null`; `export function buildPipelineNewUrl(tabHref: string, params: Param[]): string | null`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Add these imports and describes to `src/shared/query.test.ts` (keep all Task 1–2 tests unchanged):
 
@@ -568,13 +568,13 @@ describe('buildPipelineNewUrl', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run src/shared/query.test.ts`
 
 Expected: FAIL with `projectBaseFromHref is not exported` / `does not provide an export named 'projectBaseFromHref'`.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Append to `src/shared/query.ts`:
 
@@ -605,13 +605,13 @@ export function buildPipelineNewUrl(tabHref: string, params: Param[]): string | 
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npx vitest run src/shared/query.test.ts`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/shared/query.ts src/shared/query.test.ts
@@ -630,7 +630,7 @@ git commit -m "feat: derive GitLab project base and pipeline URL"
 - Consumes: nothing new
 - Produces: `export function isValidBulkText(raw: string): boolean`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Add `isValidBulkText` to the import in `src/shared/query.test.ts` and append:
 
@@ -672,13 +672,13 @@ describe('isValidBulkText', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run src/shared/query.test.ts`
 
 Expected: FAIL with `does not provide an export named 'isValidBulkText'`.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Append to `src/shared/query.ts`:
 
@@ -707,13 +707,13 @@ export function isValidBulkText(raw: string): boolean {
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npx vitest run src/shared/query.test.ts`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/shared/query.ts src/shared/query.test.ts
@@ -732,7 +732,7 @@ git commit -m "feat: validate popup bulk query text"
 - Consumes: `Profile`, `StorageShape`, `Param` from `src/shared/query.ts`
 - Produces: `export function nextDefaultName(profiles: ReadonlyArray<Pick<Profile, "name">>): string`; `export function normalizeStorage(raw: unknown): { value: StorageShape; didRepair: boolean }`; `export function createProfile(profiles: Profile[]): { profiles: Profile[]; created: Profile }`; `export function deleteProfile(profiles: Profile[], selectedProfileId: string | null, deleteId: string): { profiles: Profile[]; selectedProfileId: string | null }`; `export function tryUpdateRowKey(params: Param[], index: number, nextKey: string): { params: Param[]; error: string | null }`; `export function addEmptyRow(params: Param[]): Param[]`; `export function removeRowAt(params: Param[], index: number): Param[]`; `export function updateRowValue(params: Param[], index: number, value: string): Param[]`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `src/shared/profiles.test.ts`:
 
@@ -894,13 +894,13 @@ describe('row helpers', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run src/shared/profiles.test.ts`
 
 Expected: FAIL with `Failed to resolve import "./profiles"`.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Create `src/shared/profiles.ts`:
 
@@ -1014,13 +1014,13 @@ export function updateRowValue(params: Param[], index: number, value: string): P
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npx vitest run src/shared/profiles.test.ts`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/shared/profiles.ts src/shared/profiles.test.ts
@@ -1047,7 +1047,7 @@ git commit -m "feat: add profile storage and row helpers"
 - Consumes: nothing
 - Produces: loadable unpacked `dist/` with `manifest.json`, `content.js`, popup HTML, and icons; no `background` key
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `src/shared/manifest.test.ts`:
 
@@ -1096,13 +1096,13 @@ describe('manifest.json', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run src/shared/manifest.test.ts`
 
 Expected: FAIL with `ENOENT` for `manifest.json`.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Create `manifest.json`:
 
@@ -1433,7 +1433,7 @@ Replace the `scripts` object in `package.json` with:
   },
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npx vitest run src/shared/manifest.test.ts`
 
@@ -1445,7 +1445,7 @@ Expected: exit 0. `dist/manifest.json`, `dist/content.js`, `dist/src/popup/index
 
 Manual load (also used after later tasks): Chrome → `chrome://extensions` → Developer mode → Load unpacked → select `d:\mycode\gitlab-pipeline-chrome-plugin\dist`. Toolbar tooltip must read `GitLab Pipeline Prefill`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add manifest.json scripts/generate-icons.mjs vite.config.ts vite.content.config.ts package.json src/content/index.ts src/popup/index.html src/popup/popup.css src/popup/main.ts src/shared/manifest.test.ts public/icons
@@ -1465,7 +1465,7 @@ git commit -m "chore: add MV3 manifest, icons, and Vite extension build"
 - Consumes: `normalizeStorage(raw: unknown): { value: StorageShape; didRepair: boolean }`; `StorageShape`
 - Produces: `export async function loadStorage(): Promise<StorageShape>`; `export async function saveStorage(data: StorageShape): Promise<void>`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `src/popup/storage.test.ts`:
 
@@ -1530,13 +1530,13 @@ describe('saveStorage', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run src/popup/storage.test.ts`
 
 Expected: FAIL with `Failed to resolve import "./storage"`.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Create `src/popup/storage.ts`:
 
@@ -1581,7 +1581,7 @@ async function init(): Promise<void> {
 void init();
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npx vitest run src/popup/storage.test.ts`
 
@@ -1589,7 +1589,7 @@ Expected: PASS.
 
 Then `npm run build` (exit 0). Reload the unpacked `dist/` extension. Open the popup: only **New profile** and a disabled **Apply** are visible. No error text. No switcher, name, Delete, Rows/Bulk.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/popup/storage.ts src/popup/storage.test.ts src/popup/main.ts
@@ -1609,7 +1609,7 @@ git commit -m "feat: load popup profiles from chrome.storage.local"
 - Consumes: `createProfile`, `deleteProfile`, `loadStorage`, `saveStorage`, `StorageShape`, `Profile`
 - Produces: `export function displayProfileName(name: string): string`; `export function isApplyDisabled(profileCount: number, bulkInvalid: boolean): boolean`; popup event handlers that persist `profiles` and `selectedProfileId`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `src/popup/ui-state.test.ts`:
 
@@ -1633,13 +1633,13 @@ describe('isApplyDisabled', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run src/popup/ui-state.test.ts`
 
 Expected: FAIL with `Failed to resolve import "./ui-state"`.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Create `src/popup/ui-state.ts`:
 
@@ -1762,7 +1762,7 @@ async function init(): Promise<void> {
 void init();
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npx vitest run src/popup/ui-state.test.ts src/popup/storage.test.ts src/shared/profiles.test.ts`
 
@@ -1775,7 +1775,7 @@ Then `npm run build`, reload `dist/` in Chrome, open the popup:
 3. Clear the name field → switcher shows `Untitled`; storage still stores `""`.
 4. Click **Delete** with no confirm dialog → selection moves to the neighbor; last delete returns to the zero-profile shell.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/popup/main.ts src/popup/ui-state.ts src/popup/ui-state.test.ts
@@ -1793,7 +1793,7 @@ git commit -m "feat: add popup profile create, switch, rename, and delete"
 - Consumes: `addEmptyRow(params: Param[]): Param[]`; `removeRowAt(params: Param[], index: number): Param[]`; `tryUpdateRowKey(params: Param[], index: number, nextKey: string): { params: Param[]; error: string | null }`; `updateRowValue(params: Param[], index: number, value: string): Param[]`
 - Produces: rows UI that persists `profile.params` on each successful edit
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `src/popup/rows.test.ts`:
 
@@ -1833,13 +1833,13 @@ describe('rows editor rules', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run src/popup/rows.test.ts`
 
 Expected: PASS against the existing helpers. If FAIL, fix `src/shared/profiles.ts` first. The implementation step is the popup wiring.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Replace `src/popup/main.ts` with:
 
@@ -2018,7 +2018,7 @@ async function init(): Promise<void> {
 void init();
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npx vitest run src/popup/rows.test.ts`
 
@@ -2031,7 +2031,7 @@ Then `npm run build`, reload `dist/`, open the popup, create a profile:
 3. Change a unique key/value → reopen the popup (it starts on Rows) and the row is still there.
 4. **Remove** deletes the row immediately.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/popup/main.ts src/popup/rows.test.ts
@@ -2049,7 +2049,7 @@ git commit -m "feat: add popup rows editor for profile params"
 - Consumes: `isValidBulkText(raw: string): boolean`; `parseQuery(input: string): Param[]`; `serializeParams(params: Param[]): string`
 - Produces: in-memory view mode `'rows' | 'bulk'` (always starts as `'rows'`); bulk `input` writes `params` only when valid
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `src/popup/bulk.test.ts`:
 
@@ -2084,13 +2084,13 @@ describe('bulk view conversion', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run src/popup/bulk.test.ts`
 
 Expected: PASS against `src/shared/query.ts`. If FAIL, fix query helpers first.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Replace `src/popup/main.ts` with:
 
@@ -2357,7 +2357,7 @@ async function init(): Promise<void> {
 void init();
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npx vitest run src/popup/bulk.test.ts src/shared/query.test.ts`
 
@@ -2371,7 +2371,7 @@ Then `npm run build`, reload `dist/`, open the popup on a profile with rows `_br
 4. Fix the text to `_branch=main&a=1&b=2` → error clears, **Apply** enables, reopen popup and Rows shows the new keys.
 5. Make bulk invalid, switch to another profile: invalid text is discarded; the other profile’s serialized params load.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/popup/main.ts src/popup/bulk.test.ts
@@ -2391,7 +2391,7 @@ git commit -m "feat: add popup bulk query editor"
 - Consumes: `buildPipelineNewUrl(tabHref: string, params: Param[]): string | null`; `chrome.tabs.query({ active: true, currentWindow: true })`; `chrome.tabs.update(tabId, { url })`
 - Produces: `export const APPLY_NOT_PROJECT: string`; `export function decideApplyUrl(tabUrl: string | undefined, params: Param[]): { url: string } | { error: string }`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `src/popup/apply-url.test.ts`:
 
@@ -2428,13 +2428,13 @@ describe('decideApplyUrl', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run src/popup/apply-url.test.ts`
 
 Expected: FAIL with `Failed to resolve import "./apply-url"`.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Create `src/popup/apply-url.ts`:
 
@@ -2490,7 +2490,7 @@ Append this listener at the end of `init()`, immediately before `void init();`:
 
 `clearApplyError` already clears `APPLY_NOT_PROJECT` when the user edits profiles.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npx vitest run src/popup/apply-url.test.ts src/shared/query.test.ts`
 
@@ -2503,7 +2503,7 @@ Then `npm run build`, reload `dist/`:
 3. Editing a row or the name clears that Apply error.
 4. **Apply** stays disabled when there are zero profiles or Bulk text is invalid.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/popup/main.ts src/popup/apply-url.ts src/popup/apply-url.test.ts
@@ -2524,7 +2524,7 @@ git commit -m "feat: apply profile query to the active GitLab tab"
 - Consumes: `splitListValues(raw: string): string[]`
 - Produces: `export type LocationLike = { protocol: string; hostname: string; pathname: string; search: string }`; `export function isRunNewPipelinePage(loc: LocationLike): boolean`; `export function hasQueryParams(search: string): boolean`; `export function isSkippedFillKey(key: string): boolean`; `export function parseBooleanQuery(value: string): boolean | null`; `export function listSelection(raw: string, existingOptions: string[]): string[]`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `src/content/match.test.ts`:
 
@@ -2638,13 +2638,13 @@ describe('listSelection', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run src/content/match.test.ts src/content/fill-rules.test.ts`
 
 Expected: FAIL with `Failed to resolve import "./match"` (or `./fill-rules`).
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Create `src/content/match.ts`:
 
@@ -2700,13 +2700,13 @@ export function listSelection(raw: string, existingOptions: string[]): string[] 
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npx vitest run src/content/match.test.ts src/content/fill-rules.test.ts`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/content/match.ts src/content/match.test.ts src/content/fill-rules.ts src/content/fill-rules.test.ts
@@ -2726,7 +2726,7 @@ git commit -m "feat: detect GitLab run-new-pipeline pages and fill rules"
 - Consumes: `isRunNewPipelinePage(loc: LocationLike): boolean`; `hasQueryParams(search: string): boolean`; `parseQuery(input: string): Param[]`
 - Produces: `export function textOf(el: Element | null): string`; `export function sleep(ms: number): Promise<void>`; `export function setNativeValue(el: HTMLInputElement | HTMLTextAreaElement, value: string): void`; `export function findPipelineFormRegion(doc: Document): HTMLElement | null`; `export function findBranchToggle(doc: Document): HTMLElement | null`; `export function findVariablesSection(doc: Document): HTMLElement | null`; `export function isInputsHeadingPresent(doc: Document): boolean`; `export function isInputsSectionSettled(doc: Document): boolean`; `export function isFormReady(doc: Document): boolean`; `export function waitForForm(doc: Document, timeoutMs?: number): Promise<boolean>`; `export function isSpinnerVisible(region: Element): boolean`; `export function waitForStabilize(formRegion: Element, timeoutMs?: number, quietMs?: number): Promise<void>`; IIFE with closure booleans `filling` and `done`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 There is no jsdom/live GitLab unit suite for wait (spec: parser/URL helpers only). Lock the public wait signatures with a compile-and-import smoke test:
 
@@ -2747,13 +2747,13 @@ describe('wait exports', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run src/content/wait.export.test.ts`
 
 Expected: FAIL with `Failed to resolve import "./wait"`.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Create `src/content/dom.ts`:
 
@@ -2984,7 +2984,7 @@ import { waitForForm } from './wait';
 
 Do not attach a page-level observer that re-enters this IIFE. Do not write `sessionStorage` / `localStorage` / cookies. `filling` and `done` live only in this closure. After this task `fillForm` is not wired yet; a matching page with a query will wait for the form, then exit. Task 15 calls `fillForm`.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npx vitest run src/content/wait.export.test.ts src/content/match.test.ts`
 
@@ -2998,7 +2998,7 @@ Manual:
 2. Open a GitLab `/-/pipelines/new` URL **without** query → no wait, no warn, page unchanged.
 3. Open `/-/pipelines/new?_branch=main` on a host whose form never appears (or throttle CPU and use a 15s wait): one `console.warn` line `[GitLab Pipeline Prefill] Run new pipeline form not ready within 15s`. No toast, overlay, or banner.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/content/dom.ts src/content/wait.ts src/content/index.ts src/content/wait.export.test.ts
@@ -3020,7 +3020,7 @@ git commit -m "feat: wait for the run-new-pipeline form"
 - Consumes: `findBranchToggle(doc: Document): HTMLElement | null`; `waitForStabilize(formRegion: Element, timeoutMs?: number, quietMs?: number): Promise<void>`; `findPipelineFormRegion(doc: Document): HTMLElement | null`; `setNativeValue`; `sleep`; `textOf`
 - Produces: `export type OptionLike = { value: string; label: string }`; `export function pickOptionLike(items: OptionLike[], wanted: string): OptionLike | null`; `export function collectListboxItems(doc: Document): HTMLElement[]`; `export function optionValue(el: HTMLElement): string`; `export function pickOption(items: HTMLElement[], wanted: string): HTMLElement | null`; `export async function selectListboxOption(toggle: HTMLElement, wanted: string, search: boolean): Promise<boolean>`; `export async function setBranchIfNeeded(doc: Document, wanted: string): Promise<boolean>` (`true` only when the control was changed)
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create only `src/content/listbox-pick.test.ts` (do not create `listbox-pick.ts` yet):
 
@@ -3050,13 +3050,13 @@ describe('pickOptionLike', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run src/content/listbox-pick.test.ts`
 
 Expected: FAIL with `Failed to resolve import "./listbox-pick"`.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Create `src/content/listbox-pick.ts`:
 
@@ -3229,7 +3229,7 @@ Branch rules to implement exactly:
 3. If no option exists, leave the current branch unchanged; do not wait for stabilize.
 4. If the branch changed, wait until the pipeline form region (not the sidebar) has no spinner and no mutations for 400ms, deadline 15_000ms from the start of that wait. On stabilize timeout, continue (do not log a second timeout line).
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npx vitest run src/content/listbox-pick.test.ts`
 
@@ -3242,7 +3242,7 @@ Then `npm run build`, reload `dist/`. On a real project `/-/pipelines/new?_branc
 3. `?_branch=this-ref-does-not-exist` leaves the current branch unchanged.
 4. Refresh (F5) runs the fill again (new JS context; flags start false).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/content/listbox-pick.ts src/content/listbox-pick.test.ts src/content/listbox.ts src/content/branch.ts src/content/index.ts
@@ -3275,7 +3275,7 @@ GitLab DOM (current gitlab.com Run new pipeline; use these selectors, then fall 
 - Variable value: `[data-testid="pipeline-form-ci-variable-value-field"]` or `[data-testid="pipeline-form-ci-variable-value-dropdown"]`
 - Submit control (never click): `[data-testid="run-pipeline-button"]` / text `New pipeline` / `Run pipeline`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `src/content/fill.test.ts`:
 
@@ -3309,13 +3309,13 @@ describe('fillForm', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run src/content/fill.test.ts`
 
 Expected: FAIL with `Failed to resolve import "./fill"`.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Create `src/content/widgets.ts`:
 
@@ -3701,7 +3701,7 @@ Widget rules:
 - Never click **Run pipeline**, **New pipeline**, **Cancel**, **Select inputs**, or **Preview inputs**
 - No toast or overlay; skip failures silently except the one form-ready `console.warn`
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npx vitest run`
 
@@ -3720,7 +3720,7 @@ Manual on gitlab.com (project whose Run new pipeline page has Inputs string/list
 
 Load unpacked reminder: `chrome://extensions` → Developer mode → Load unpacked → `d:\mycode\gitlab-pipeline-chrome-plugin\dist`. Rebuild with `npm run build` after each change, then click Reload on the extension card.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/content/widgets.ts src/content/variables.ts src/content/fill.ts src/content/fill.test.ts src/content/index.ts
