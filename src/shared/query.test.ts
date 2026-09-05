@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { buildPipelineNewUrl, parseQuery, projectBaseFromHref, serializeParams, splitListValues } from './query';
+import {
+  buildPipelineNewUrl,
+  isValidBulkText,
+  parseQuery,
+  projectBaseFromHref,
+  serializeParams,
+  splitListValues,
+} from './query';
 
 describe('parseQuery', () => {
   it('treats a leading ? as optional', () => {
@@ -151,5 +158,41 @@ describe('buildPipelineNewUrl', () => {
     expect(buildPipelineNewUrl('https://gitlab.com/acme/app/-/pipelines', [])).toBe(
       'https://gitlab.com/acme/app/-/pipelines/new',
     );
+  });
+});
+
+describe('isValidBulkText', () => {
+  it('accepts optional ? and normal pairs', () => {
+    expect(isValidBulkText('?_branch=main&a=1')).toBe(true);
+    expect(isValidBulkText('_branch=main&a=1')).toBe(true);
+  });
+
+  it('accepts empty and ? only', () => {
+    expect(isValidBulkText('')).toBe(true);
+    expect(isValidBulkText('?')).toBe(true);
+    expect(isValidBulkText('   ')).toBe(true);
+  });
+
+  it('accepts encoded spaces and trailing &', () => {
+    expect(isValidBulkText('a=hello%20world')).toBe(true);
+    expect(isValidBulkText('a=hello+world')).toBe(true);
+    expect(isValidBulkText('a=1&')).toBe(true);
+  });
+
+  it('accepts key-only segments as empty values', () => {
+    expect(isValidBulkText('a')).toBe(true);
+  });
+
+  it('rejects ASCII whitespace in the trimmed string', () => {
+    expect(isValidBulkText('a=hello world')).toBe(false);
+  });
+
+  it('rejects empty keys', () => {
+    expect(isValidBulkText('&=1')).toBe(false);
+    expect(isValidBulkText('?a=1&=2')).toBe(false);
+  });
+
+  it('rejects #', () => {
+    expect(isValidBulkText('a=1#x')).toBe(false);
   });
 });

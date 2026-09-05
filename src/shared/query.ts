@@ -77,3 +77,26 @@ export function buildPipelineNewUrl(tabHref: string, params: Param[]): string | 
   }
   return `${base}/-/pipelines/new${serializeParams(params)}`;
 }
+
+export function isValidBulkText(raw: string): boolean {
+  const trimmed = raw.trim();
+  if (trimmed === '' || trimmed === '?') {
+    return true;
+  }
+  if (trimmed.includes('#')) {
+    return false;
+  }
+  if (/[ \t\n\r]/.test(trimmed)) {
+    return false;
+  }
+  const body = trimmed.startsWith('?') ? trimmed.slice(1) : trimmed;
+  for (const segment of body.split('&')) {
+    if (segment === '') {
+      continue;
+    }
+    if (segment.startsWith('=')) {
+      return false;
+    }
+  }
+  return true;
+}
