@@ -2,12 +2,28 @@ import { describe, expect, it } from 'vitest';
 import { hasQueryParams, isRunNewPipelinePage } from './match';
 
 describe('isRunNewPipelinePage', () => {
-  it('matches http(s) hosts that contain gitlab, case-insensitively', () => {
+  it('matches http(s) paths ending in /-/pipelines/new regardless of host', () => {
     expect(
       isRunNewPipelinePage({
         protocol: 'https:',
-        hostname: 'gitlab.com',
-        pathname: '/acme/app/-/pipelines/new',
+        hostname: 'git.acme.com',
+        pathname: '/group/proj/-/pipelines/new',
+        search: '',
+      }),
+    ).toBe(true);
+    expect(
+      isRunNewPipelinePage({
+        protocol: 'https:',
+        hostname: 'code.acme.com',
+        pathname: '/g/p/-/pipelines/new/',
+        search: '',
+      }),
+    ).toBe(true);
+    expect(
+      isRunNewPipelinePage({
+        protocol: 'https:',
+        hostname: 'example.com',
+        pathname: '/foo/-/pipelines/new',
         search: '',
       }),
     ).toBe(true);
@@ -21,15 +37,7 @@ describe('isRunNewPipelinePage', () => {
     ).toBe(true);
   });
 
-  it('rejects non-gitlab hosts, wrong protocol, and longer suffixes', () => {
-    expect(
-      isRunNewPipelinePage({
-        protocol: 'https:',
-        hostname: 'example.com',
-        pathname: '/foo/-/pipelines/new',
-        search: '',
-      }),
-    ).toBe(false);
+  it('rejects wrong protocol, longer suffixes, and paths without /new', () => {
     expect(
       isRunNewPipelinePage({
         protocol: 'file:',

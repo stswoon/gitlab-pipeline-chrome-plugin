@@ -143,7 +143,11 @@ export async function applyInputWidget(row: HTMLElement, raw: string): Promise<b
       listToggle.click();
       await sleep(50);
       const items = collectListboxItems(row.ownerDocument);
-      const empty = items.find((item) => textOf(item) === '' || optionValue(item) === '');
+      const empty = items.find(
+        (item) =>
+          textOf(item) === '' ||
+          (item.hasAttribute('data-value') && item.getAttribute('data-value') === ''),
+      );
       if (!empty) {
         listToggle.click();
         return false;

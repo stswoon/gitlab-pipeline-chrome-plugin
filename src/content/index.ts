@@ -31,6 +31,8 @@ import { waitForForm } from './wait';
         return;
       }
       await fillForm(document, params);
+    } catch {
+      /* silent per spec */
     } finally {
       done = true;
       filling = false;

@@ -51,6 +51,21 @@ export function isInputsHeadingPresent(doc: Document): boolean {
   ).some((el) => textOf(el) === 'Inputs' || textOf(el).startsWith('Inputs'));
 }
 
+function inputsHeading(root: HTMLElement): HTMLElement | null {
+  const found = Array.from(
+    root.querySelectorAll('h2, h3, h4, .gl-heading, [class*="crud-title"], legend'),
+  ).find((el) => textOf(el) === 'Inputs' || textOf(el).startsWith('Inputs'));
+  return found instanceof HTMLElement ? found : null;
+}
+
+function inputsSectionRoot(heading: HTMLElement): HTMLElement {
+  const scoped =
+    heading.closest('section, fieldset, .gl-card, .card') ??
+    heading.parentElement ??
+    heading;
+  return scoped instanceof HTMLElement ? scoped : heading;
+}
+
 export function isInputsSectionSettled(doc: Document): boolean {
   const root = region(doc);
   if (root.querySelector('[data-testid="input-row"]')) {
@@ -62,10 +77,14 @@ export function isInputsSectionSettled(doc: Document): boolean {
   if (root.querySelector('[data-testid="no-inputs-empty-state"]')) {
     return true;
   }
-  if (root.querySelector('table')) {
-    return true;
+  const heading = inputsHeading(root);
+  if (!heading) {
+    return false;
   }
-  return Array.from(root.querySelectorAll('p, div')).some((el) => /there are no inputs/i.test(textOf(el)));
+  const section = inputsSectionRoot(heading);
+  return Array.from(section.querySelectorAll('p, div')).some((el) =>
+    /there are no inputs/i.test(textOf(el)),
+  );
 }
 
 export function isFormReady(doc: Document): boolean {

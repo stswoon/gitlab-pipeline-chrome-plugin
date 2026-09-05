@@ -11,30 +11,34 @@ export async function fillForm(doc: Document, params: Param[]): Promise<void> {
   }
 
   for (const { key, value } of params) {
-    if (key === '_branch' || isSkippedFillKey(key)) {
-      continue;
-    }
-
-    const inputRow = findInputRow(doc, key);
-    if (inputRow) {
-      await applyInputWidget(inputRow, value);
-      continue;
-    }
-
-    const variableRow = findVariableRow(doc, key);
-    if (variableRow) {
-      if (isFileVariableRow(variableRow)) {
-        continue;
-      }
-      const ok = await setVariableRow(variableRow, key, value);
-      if (!ok) {
-        continue;
-      }
-      continue;
-    }
-
     try {
-      await addVariable(doc, key, value);
+      if (key === '_branch' || isSkippedFillKey(key)) {
+        continue;
+      }
+
+      const inputRow = findInputRow(doc, key);
+      if (inputRow) {
+        await applyInputWidget(inputRow, value);
+        continue;
+      }
+
+      const variableRow = findVariableRow(doc, key);
+      if (variableRow) {
+        if (isFileVariableRow(variableRow)) {
+          continue;
+        }
+        const ok = await setVariableRow(variableRow, key, value);
+        if (!ok) {
+          continue;
+        }
+        continue;
+      }
+
+      try {
+        await addVariable(doc, key, value);
+      } catch {
+        continue;
+      }
     } catch {
       continue;
     }

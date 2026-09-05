@@ -9,9 +9,6 @@ export function isRunNewPipelinePage(loc: LocationLike): boolean {
   if (loc.protocol !== 'http:' && loc.protocol !== 'https:') {
     return false;
   }
-  if (!loc.hostname.toLowerCase().includes('gitlab')) {
-    return false;
-  }
   return /\/-\/pipelines\/new\/?$/.test(loc.pathname);
 }
 

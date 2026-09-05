@@ -15,7 +15,7 @@ import {
 } from '../shared/query';
 import { APPLY_NOT_PROJECT, decideApplyUrl } from './apply-url';
 import { loadStorage, saveStorage } from './storage';
-import { displayProfileName, isApplyDisabled } from './ui-state';
+import { displayProfileName, isApplyDisabled, syncPopupShell } from './ui-state';
 
 const DUPLICATE_KEY = 'Keys must be unique.';
 const INVALID_BULK = 'Invalid query string.';
@@ -119,10 +119,17 @@ function render(): void {
   const name = document.getElementById('profile-name') as HTMLInputElement;
   const rowsView = document.getElementById('rows-view') as HTMLElement;
   const bulkView = document.getElementById('bulk-view') as HTMLElement;
-  const empty = state.profiles.length === 0;
-  app.classList.toggle('is-empty', empty);
-  apply.disabled = isApplyDisabled(state.profiles.length, view === 'bulk' && !bulkValid);
-  del.disabled = selectedProfile() === null;
+  syncPopupShell(
+    {
+      app,
+      apply,
+      deleteBtn: del,
+      newProfile: document.getElementById('btn-new-profile') as HTMLButtonElement,
+    },
+    state.profiles.length,
+    view === 'bulk' && !bulkValid,
+    selectedProfile() !== null,
+  );
   select.innerHTML = '';
   for (const profile of state.profiles) {
     const option = document.createElement('option');
