@@ -7,6 +7,7 @@
   --color-border: #dcdcde;
   --color-border-strong: #c4c4c4;
   --color-focus: #1f75cb;
+  --color-info: #1f75cb;
   --color-accent: #fc6d26;
   --color-accent-hover: #e24329;
   --color-accent-soft: rgba(252, 109, 38, 0.12);
@@ -208,15 +209,18 @@ button:disabled {
   box-shadow: none;
 }
 
-#btn-new-profile,
 #btn-delete {
   color: var(--color-text-subtle);
 }
 
+#btn-new-profile {
+  color: var(--color-info);
+}
+
 #btn-new-profile:hover:not(:disabled) {
   color: #fff;
-  background: var(--color-text-muted);
-  border-color: var(--color-text-muted);
+  background: var(--color-info);
+  border-color: var(--color-info);
 }
 
 #btn-delete:hover:not(:disabled) {

@@ -46,8 +46,21 @@ export function normalizeStorage(raw: unknown): { value: StorageShape; didRepair
     didRepair = true;
   }
 
+  if (profiles.length === 0) {
+    const seeded = createProfile([]);
+    return {
+      value: { profiles: seeded.profiles, selectedProfileId: seeded.created.id },
+      didRepair: true,
+    };
+  }
+
   if (selectedProfileId !== null && !profiles.some((profile) => profile.id === selectedProfileId)) {
     selectedProfileId = profiles[0]?.id ?? null;
+    didRepair = true;
+  }
+
+  if (selectedProfileId === null) {
+    selectedProfileId = profiles[0]!.id;
     didRepair = true;
   }
 
@@ -74,6 +87,10 @@ export function deleteProfile(
     return { profiles, selectedProfileId };
   }
   const next = profiles.filter((profile) => profile.id !== deleteId);
+  if (next.length === 0) {
+    const seeded = createProfile([]);
+    return { profiles: seeded.profiles, selectedProfileId: seeded.created.id };
+  }
   if (selectedProfileId !== deleteId && next.some((profile) => profile.id === selectedProfileId)) {
     return { profiles: next, selectedProfileId };
   }
