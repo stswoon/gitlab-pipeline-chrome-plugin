@@ -4,20 +4,12 @@ import {waitForForm} from './wait';
 import {parseQuery} from "../shared/query";
 
 async function gitlabPipelinePrefill() {
-    let filling = false;
-    let done = false;
-
     if (!isOnNewPipelinePage(window.location)) {
         return;
     }
     if (!hasQueryParams(window.location.search)) {
         return;
     }
-    if (filling || done) {
-        return;
-    }
-
-    filling = true;
 
     console.info('[GitLab Pipeline Prefill] Start fill new pipeline form');
     try {
@@ -34,12 +26,7 @@ async function gitlabPipelinePrefill() {
         console.info('[GitLab Pipeline Prefill] Successfully finish filling new pipeline form');
     } catch (e) {
         console.error('[GitLab Pipeline Prefill] Error during fill new pipeline form: ', e);
-    } finally {
-        done = true; //TODO: remove
-        filling = false;
     }
 }
 
 gitlabPipelinePrefill();
-
-

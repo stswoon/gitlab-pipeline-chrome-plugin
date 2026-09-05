@@ -1,13 +1,9 @@
 import {createProfile, deleteProfile} from './profiles';
-import {
-    applyBulkInput,
-    displayBulkText,
-    isValidBulkText,
-} from '../shared/query';
 import {APPLY_NOT_PROJECT, decideApplyUrl} from './apply-url';
 import {loadStorage, saveStorage} from './storage';
 import {displayProfileName, isApplyDisabled, syncPopupShell} from './ui-state';
 import {Profile, ProfileStorage} from "../shared/types";
+import {applyBulkInput, displayBulkText, isValidBulkText} from "./bulk";
 
 const INVALID_BULK = 'Invalid query string.';
 
