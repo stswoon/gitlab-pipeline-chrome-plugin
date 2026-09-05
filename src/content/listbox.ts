@@ -1,5 +1,6 @@
 import { setNativeValue, sleep, textOf } from './dom';
 import { pickOptionLike } from './listbox-pick';
+import { isSpinnerVisible } from './wait';
 
 export function optionValue(el: HTMLElement): string {
   const testid = el.getAttribute('data-testid') ?? '';
@@ -33,24 +34,67 @@ export function pickOption(items: HTMLElement[], wanted: string): HTMLElement | 
   return mapped.find((item) => item.value === picked.value && item.label === picked.label)?.el ?? null;
 }
 
+const SEARCH_INPUT_SELECTOR =
+  '.gl-new-dropdown input, [data-testid="listbox-search-input"], input[placeholder="Search refs"]';
+
+function dropdownRoot(toggle: HTMLElement): Element {
+  return toggle.closest('.gl-new-dropdown, .ref-selector, fieldset') ?? toggle.ownerDocument.body;
+}
+
+function pickReadyOption(doc: Document, wanted: string, root: Element): HTMLElement | null {
+  if (isSpinnerVisible(root)) {
+    return null;
+  }
+  return pickOption(collectListboxItems(doc), wanted);
+}
+
+function waitForReadyOption(
+  doc: Document,
+  wanted: string,
+  root: Element,
+  timeoutMs: number,
+): Promise<HTMLElement | null> {
+  const immediate = pickReadyOption(doc, wanted, root);
+  if (immediate) {
+    return Promise.resolve(immediate);
+  }
+  return new Promise((resolve) => {
+    let observer: MutationObserver;
+    const timer = window.setTimeout(() => {
+      observer.disconnect();
+      resolve(pickReadyOption(doc, wanted, root));
+    }, timeoutMs);
+    observer = new MutationObserver(() => {
+      const found = pickReadyOption(doc, wanted, root);
+      if (found) {
+        window.clearTimeout(timer);
+        observer.disconnect();
+        resolve(found);
+      }
+    });
+    observer.observe(doc.body, { childList: true, subtree: true, attributes: true });
+  });
+}
+
 export async function selectListboxOption(
   toggle: HTMLElement,
   wanted: string,
   search: boolean,
 ): Promise<boolean> {
   const doc = toggle.ownerDocument;
+  const root = dropdownRoot(toggle);
   toggle.click();
   await sleep(50);
-  if (search) {
-    const searchInput = doc.querySelector<HTMLInputElement>(
-      '.gl-new-dropdown input, [data-testid="listbox-search-input"], input[placeholder="Search refs"]',
-    );
+  let match = await waitForReadyOption(doc, wanted, root, 2_000);
+  if (!match && search) {
+    const searchInput =
+      root.querySelector<HTMLInputElement>(SEARCH_INPUT_SELECTOR) ??
+      doc.querySelector<HTMLInputElement>(SEARCH_INPUT_SELECTOR);
     if (searchInput) {
       setNativeValue(searchInput, wanted);
-      await sleep(400);
+      match = await waitForReadyOption(doc, wanted, root, 15_000);
     }
   }
-  const match = pickOption(collectListboxItems(doc), wanted);
   if (!match) {
     toggle.click();
     await sleep(50);

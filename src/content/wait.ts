@@ -20,7 +20,7 @@ function region(doc: Document): HTMLElement {
 }
 
 export function findBranchToggle(doc: Document): HTMLElement | null {
-  for (const label of Array.from(region(doc).querySelectorAll('label'))) {
+  for (const label of Array.from(region(doc).querySelectorAll('label, legend'))) {
     if (textOf(label) === 'Run for branch name or tag') {
       const group = label.closest('.gl-form-group, .form-group, fieldset') ?? label.parentElement;
       const button = group?.querySelector('button');
