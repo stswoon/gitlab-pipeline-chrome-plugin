@@ -38,10 +38,14 @@ export type PopupStore = {
   addParam: () => void
   updateParam: (paramId: string, patch: ParamPatch) => void
   removeParam: (paramId: string) => void
+  moveParam: (fromIndex: number, toIndex: number) => void
   setView: (view: EditorView) => void
   setBulkDraft: (text: string) => void
   applyToTab: () => Promise<void>
   readFromPage: () => Promise<void>
+  saveProfilesJson: () => void
+  replaceAllProfiles: (shape: StorageShape) => void
+  rejectImportedFile: () => void
 }
 
 function createId(): string {
@@ -107,6 +111,60 @@ function isProfile(value: unknown): value is Profile {
     Array.isArray(profile.params) &&
     profile.params.every(isProfileParam)
   )
+}
+
+function toProfileParam(param: ProfileParam): ProfileParam {
+  return {
+    id: param.id,
+    type: param.type,
+    name: param.name,
+    value: param.value,
+  }
+}
+
+function toProfile(profile: Profile): Profile {
+  return {
+    id: profile.id,
+    name: profile.name,
+    params: profile.params.map(toProfileParam),
+  }
+}
+
+export function parseImportedStorage(raw: unknown): StorageShape | null {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+    return null
+  }
+  const record = raw as Record<string, unknown>
+  if (!Array.isArray(record.profiles) || record.profiles.length === 0) {
+    return null
+  }
+  if (!record.profiles.every(isProfile)) {
+    return null
+  }
+  const profiles = record.profiles.map(toProfile)
+  const currentId =
+    typeof record.currentProfileId === 'string' ? record.currentProfileId : ''
+  const current = profiles.find((profile) => profile.id === currentId) ?? profiles[0]
+  if (!current) {
+    return null
+  }
+  return {
+    profiles,
+    currentProfileId: current.id,
+  }
+}
+
+function downloadProfilesJson(shape: StorageShape) {
+  const json = JSON.stringify(shape, null, 2)
+  const blob = new Blob([json], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = 'gitlab-pipeline-profiles.json'
+  document.body.append(link)
+  link.click()
+  link.remove()
+  URL.revokeObjectURL(url)
 }
 
 function normalizeStorage(raw: Record<string, unknown>): StorageShape {
@@ -403,6 +461,38 @@ export const usePopupStore = create<PopupStore>((set, get) => {
       commit(shapeOf({ profiles: nextProfiles, currentProfileId }))
     },
 
+    moveParam: (fromIndex, toIndex) => {
+      const { profiles, currentProfileId } = get()
+      const current = findProfile(profiles, currentProfileId)
+      if (!current) {
+        return
+      }
+
+      const { params } = current
+      if (
+        fromIndex === toIndex ||
+        fromIndex < 0 ||
+        toIndex < 0 ||
+        fromIndex >= params.length ||
+        toIndex >= params.length
+      ) {
+        return
+      }
+
+      const nextParams = params.slice()
+      const [moved] = nextParams.splice(fromIndex, 1)
+      if (!moved) {
+        return
+      }
+      nextParams.splice(toIndex, 0, moved)
+
+      const nextProfiles = mapCurrent(profiles, currentProfileId, (profile) => ({
+        ...profile,
+        params: nextParams,
+      }))
+      commit(shapeOf({ profiles: nextProfiles, currentProfileId }))
+    },
+
     setView: (view) => {
       const state = get()
       if (view === state.view) {
@@ -536,6 +626,43 @@ export const usePopupStore = create<PopupStore>((set, get) => {
       } finally {
         set({ busy: 'idle' })
       }
+    },
+
+    saveProfilesJson: () => {
+      if (get().busy !== 'idle') {
+        return
+      }
+      if (!flushBulk()) {
+        return
+      }
+      const { profiles, currentProfileId } = get()
+      downloadProfilesJson({ profiles, currentProfileId })
+      set({ status: infoStatus(STATUS.profilesSaved) })
+    },
+
+    replaceAllProfiles: (shape) => {
+      if (get().busy !== 'idle') {
+        return
+      }
+      const current = findProfile(shape.profiles, shape.currentProfileId)
+      if (!current) {
+        return
+      }
+      const { view } = get()
+      commit(
+        {
+          profiles: shape.profiles,
+          currentProfileId: shape.currentProfileId,
+        },
+        {
+          bulkDraft: view === 'bulk' ? serializeParams(current.params) : get().bulkDraft,
+          status: infoStatus(STATUS.profilesLoaded),
+        },
+      )
+    },
+
+    rejectImportedFile: () => {
+      set({ status: errorStatus(STATUS.invalidProfilesFile) })
     },
   }
 })

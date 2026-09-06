@@ -18,21 +18,29 @@ export function App() {
 
   if (!hydrated) {
     return (
-      <main className="flex w-[400px] min-w-[380px] max-w-[420px] flex-col bg-background p-4 text-sm text-muted-foreground">
+      <main className="flex w-[600px] min-w-[570px] max-w-[630px] flex-col bg-background p-4 text-sm text-muted-foreground">
         Loading…
       </main>
     )
   }
 
   return (
-    <main className="flex max-h-[600px] w-[400px] min-w-[380px] max-w-[420px] flex-col bg-background text-foreground">
+    <main className="flex max-h-[600px] w-[600px] min-w-[570px] max-w-[630px] flex-col bg-background text-foreground">
       <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-3">
         <ProfileHeader />
-        <div className="flex gap-1">
+        <div
+          data-slot="button-group"
+          role="tablist"
+          aria-label="Editor view"
+          className="inline-flex w-fit rounded-lg border border-border p-0.5"
+        >
           <Button
             type="button"
             size="sm"
-            variant={view === 'list' ? 'default' : 'outline'}
+            role="tab"
+            aria-selected={view === 'list'}
+            variant={view === 'list' ? 'default' : 'ghost'}
+            className="rounded-md"
             onClick={() => {
               setView('list')
             }}
@@ -42,7 +50,10 @@ export function App() {
           <Button
             type="button"
             size="sm"
-            variant={view === 'bulk' ? 'default' : 'outline'}
+            role="tab"
+            aria-selected={view === 'bulk'}
+            variant={view === 'bulk' ? 'default' : 'ghost'}
+            className="rounded-md"
             onClick={() => {
               setView('bulk')
             }}

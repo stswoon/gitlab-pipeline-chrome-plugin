@@ -55,29 +55,36 @@ function splitTokens(text: string): string[] {
   return tokens
 }
 
-function upsertByName(
-  map: Map<string, ProfileParam>,
-  type: 'variable' | 'input',
-  name: string,
-  value: string,
-) {
-  const existing = map.get(name)
-  if (existing) {
-    existing.value = value
-    return
+type DraftParam = {
+  type: ProfileParam['type']
+  name: string
+  value: string
+}
+
+function draftKey(draft: DraftParam): string {
+  return draft.type === 'branch' ? 'branch' : `${draft.type}:${draft.name}`
+}
+
+function keepLastOccurrences(drafts: DraftParam[]): DraftParam[] {
+  const seen = new Set<string>()
+  const kept: DraftParam[] = []
+  for (let i = drafts.length - 1; i >= 0; i -= 1) {
+    const draft = drafts[i]
+    if (!draft) {
+      continue
+    }
+    const key = draftKey(draft)
+    if (seen.has(key)) {
+      continue
+    }
+    seen.add(key)
+    kept.unshift(draft)
   }
-  map.set(name, {
-    id: createParamId(),
-    type,
-    name,
-    value,
-  })
+  return kept
 }
 
 export function serializeParams(params: ProfileParam[]): string {
-  let refValue: string | undefined
-  const variables = new Map<string, string>()
-  const inputs = new Map<string, string>()
+  const parts: string[] = []
 
   for (const param of params) {
     const name = param.name.trim()
@@ -87,38 +94,26 @@ export function serializeParams(params: ProfileParam[]): string {
     }
 
     if (param.type === 'branch') {
-      refValue = value
+      parts.push(`ref=${encodeComponent(value)}`)
       continue
     }
 
     if (param.type === 'variable') {
-      variables.set(name, value)
+      parts.push(`var[${encodeComponent(name)}]=${encodeComponent(value)}`)
       continue
     }
 
     if (param.type === 'input') {
-      inputs.set(name, value)
+      parts.push(`input[${encodeComponent(name)}]=${encodeComponent(value)}`)
     }
   }
 
-  const parts: string[] = []
-  if (refValue !== undefined) {
-    parts.push(`ref=${encodeComponent(refValue)}`)
-  }
-  for (const [name, value] of variables) {
-    parts.push(`var[${encodeComponent(name)}]=${encodeComponent(value)}`)
-  }
-  for (const [name, value] of inputs) {
-    parts.push(`input[${encodeComponent(name)}]=${encodeComponent(value)}`)
-  }
   return parts.join('&')
 }
 
 export function parseQuery(text: string): ParseQueryResult {
   const tokens = splitTokens(text)
-  let branch: ProfileParam | undefined
-  const variables = new Map<string, ProfileParam>()
-  const inputs = new Map<string, ProfileParam>()
+  const drafts: DraftParam[] = []
 
   for (const token of tokens) {
     const eq = token.indexOf('=')
@@ -149,12 +144,11 @@ export function parseQuery(text: string): ParseQueryResult {
     }
 
     if (decodedKey === 'ref') {
-      branch = {
-        id: createParamId(),
+      drafts.push({
         type: 'branch',
         name: 'ref',
         value: decodedValue,
-      }
+      })
       continue
     }
 
@@ -163,7 +157,7 @@ export function parseQuery(text: string): ParseQueryResult {
       if (!name) {
         continue
       }
-      upsertByName(variables, 'variable', name, decodedValue)
+      drafts.push({ type: 'variable', name, value: decodedValue })
       continue
     }
 
@@ -172,15 +166,17 @@ export function parseQuery(text: string): ParseQueryResult {
       if (!name) {
         continue
       }
-      upsertByName(inputs, 'input', name, decodedValue)
+      drafts.push({ type: 'input', name, value: decodedValue })
     }
   }
 
-  const params: ProfileParam[] = []
-  if (branch) {
-    params.push(branch)
+  return {
+    ok: true,
+    params: keepLastOccurrences(drafts).map((draft) => ({
+      id: createParamId(),
+      type: draft.type,
+      name: draft.name,
+      value: draft.value,
+    })),
   }
-  params.push(...variables.values())
-  params.push(...inputs.values())
-  return { ok: true, params }
 }

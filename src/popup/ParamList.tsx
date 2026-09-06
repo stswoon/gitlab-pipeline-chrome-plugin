@@ -1,4 +1,5 @@
-import { PlusIcon, XIcon } from 'lucide-react'
+import { useState, type DragEvent } from 'react'
+import { GripVerticalIcon, PlusIcon, XIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -9,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { cn } from '@/lib/utils'
 import type { ParamType, ProfileParam } from '@/shared/types'
 import { STATUS } from './status'
 import { selectCurrentProfile, usePopupStore } from './store'
@@ -19,12 +21,39 @@ const PARAM_TYPES: { value: ParamType; label: string }[] = [
   { value: 'branch', label: 'branch' },
 ]
 
+const PARAM_INDEX_MIME = 'application/x-param-index'
+
+function readDragIndex(event: DragEvent): number | null {
+  const raw = event.dataTransfer.getData(PARAM_INDEX_MIME) || event.dataTransfer.getData('text/plain')
+  if (!raw) {
+    return null
+  }
+  const index = Number(raw)
+  return Number.isInteger(index) ? index : null
+}
+
 function ParamRow({
   param,
+  index,
   branchTaken,
+  isDragging,
+  isDropTarget,
+  dragFromIndex,
+  onDragStart,
+  onDragOver,
+  onDragEnd,
+  onDrop,
 }: {
   param: ProfileParam
+  index: number
   branchTaken: boolean
+  isDragging: boolean
+  isDropTarget: boolean
+  dragFromIndex: number | null
+  onDragStart: () => void
+  onDragOver: () => void
+  onDragEnd: () => void
+  onDrop: (fromIndex: number) => void
 }) {
   const updateParam = usePopupStore((state) => state.updateParam)
   const removeParam = usePopupStore((state) => state.removeParam)
@@ -32,7 +61,44 @@ function ParamRow({
   const disableBranchOption = branchTaken && !isBranch
 
   return (
-    <div className="flex items-center gap-1.5">
+    <div
+      data-slot="param-row"
+      className={cn(
+        'flex items-center gap-1.5 rounded-md',
+        isDragging && 'opacity-50',
+        isDropTarget && 'bg-accent/60 ring-1 ring-ring',
+      )}
+      onDragOver={(event) => {
+        event.preventDefault()
+        event.dataTransfer.dropEffect = 'move'
+        onDragOver()
+      }}
+      onDrop={(event) => {
+        event.preventDefault()
+        const fromIndex = readDragIndex(event) ?? dragFromIndex
+        if (fromIndex !== null) {
+          onDrop(fromIndex)
+        }
+      }}
+    >
+      <span
+        draggable
+        aria-label="Drag to reorder"
+        className="inline-flex size-7 shrink-0 cursor-grab items-center justify-center text-muted-foreground active:cursor-grabbing"
+        onDragStart={(event) => {
+          event.dataTransfer.setData(PARAM_INDEX_MIME, String(index))
+          event.dataTransfer.setData('text/plain', String(index))
+          event.dataTransfer.effectAllowed = 'move'
+          const row = event.currentTarget.closest('[data-slot="param-row"]')
+          if (row instanceof HTMLElement) {
+            event.dataTransfer.setDragImage(row, 12, 16)
+          }
+          onDragStart()
+        }}
+        onDragEnd={onDragEnd}
+      >
+        <GripVerticalIcon className="size-4" />
+      </span>
       <Select
         value={param.type}
         onValueChange={(value) => {
@@ -91,13 +157,39 @@ function ParamRow({
 export function ParamList() {
   const current = usePopupStore(selectCurrentProfile)
   const addParam = usePopupStore((state) => state.addParam)
+  const moveParam = usePopupStore((state) => state.moveParam)
   const params = current?.params ?? []
   const branchTaken = params.some((param) => param.type === 'branch')
+  const [dragIndex, setDragIndex] = useState<number | null>(null)
+  const [overIndex, setOverIndex] = useState<number | null>(null)
 
   return (
     <div className="flex flex-col gap-2">
-      {params.map((param) => (
-        <ParamRow key={param.id} param={param} branchTaken={branchTaken} />
+      {params.map((param, index) => (
+        <ParamRow
+          key={param.id}
+          param={param}
+          index={index}
+          branchTaken={branchTaken}
+          isDragging={dragIndex === index}
+          isDropTarget={overIndex === index && dragIndex !== null && dragIndex !== index}
+          dragFromIndex={dragIndex}
+          onDragStart={() => {
+            setDragIndex(index)
+          }}
+          onDragOver={() => {
+            setOverIndex(index)
+          }}
+          onDragEnd={() => {
+            setDragIndex(null)
+            setOverIndex(null)
+          }}
+          onDrop={(fromIndex) => {
+            moveParam(fromIndex, index)
+            setDragIndex(null)
+            setOverIndex(null)
+          }}
+        />
       ))}
       <Button type="button" variant="outline" size="sm" onClick={addParam}>
         <PlusIcon data-icon="inline-start" />
