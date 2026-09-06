@@ -43,6 +43,8 @@ export function ProfileHeader() {
   const saveProfilesJson = usePopupStore((state) => state.saveProfilesJson)
   const replaceAllProfiles = usePopupStore((state) => state.replaceAllProfiles)
   const rejectImportedFile = usePopupStore((state) => state.rejectImportedFile)
+  const view = usePopupStore((state) => state.view)
+  const setView = usePopupStore((state) => state.setView)
   const current = usePopupStore(selectCurrentProfile)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -136,7 +138,7 @@ export function ProfileHeader() {
           Delete
         </Button>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-nowrap">
         <Button
           type="button"
           variant="outline"
@@ -164,6 +166,39 @@ export function ProfileHeader() {
           className="hidden"
           onChange={onImportFile}
         />
+        <div
+          data-slot="button-group"
+          role="tablist"
+          aria-label="Editor view"
+          className="ml-auto inline-flex w-fit rounded-lg border border-border p-0.5"
+        >
+          <Button
+            type="button"
+            size="sm"
+            role="tab"
+            aria-selected={view === 'list'}
+            variant={view === 'list' ? 'default' : 'ghost'}
+            className="rounded-md"
+            onClick={() => {
+              setView('list')
+            }}
+          >
+            List
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            role="tab"
+            aria-selected={view === 'bulk'}
+            variant={view === 'bulk' ? 'default' : 'ghost'}
+            className="rounded-md"
+            onClick={() => {
+              setView('bulk')
+            }}
+          >
+            Bulk
+          </Button>
+        </div>
       </div>
       {isLastProfile ? (
         <p className="text-xs text-muted-foreground">{STATUS.keepOneProfile}</p>
