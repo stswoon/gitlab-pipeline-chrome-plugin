@@ -19,5 +19,5 @@
     "noUncheckedSideEffectImports": true,
     "resolveJsonModule": true
   },
-  "include": ["vite.config.ts"]
+  "include": ["rsbuild.config.ts"]
 }

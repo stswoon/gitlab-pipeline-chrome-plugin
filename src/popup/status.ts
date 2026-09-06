@@ -7,4 +7,7 @@ export const STATUS = {
   bulkError: 'Invalid query. Fix it or switch back to the previous list.',
   secondBranch: 'A profile can have only one branch row.',
   keepOneProfile: 'Keep at least one profile',
+  profilesSaved: 'Profiles saved.',
+  profilesLoaded: 'Profiles loaded.',
+  invalidProfilesFile: 'Invalid profiles file.',
 } as const

@@ -4,9 +4,57 @@ import { Select as SelectPrimitive } from "radix-ui"
 import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from "lucide-react"
 
 function Select({
+  open: openProp,
+  defaultOpen,
+  onOpenChange,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Root>) {
-  return <SelectPrimitive.Root data-slot="select" {...props} />
+  const isControlled = openProp !== undefined
+  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen ?? false)
+  const open = isControlled ? openProp : uncontrolledOpen
+  const ignoreDismissRef = React.useRef(false)
+
+  React.useEffect(() => {
+    if (!open) {
+      return
+    }
+    const allowEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        ignoreDismissRef.current = false
+      }
+    }
+    window.addEventListener("keydown", allowEscape, true)
+    return () => {
+      window.removeEventListener("keydown", allowEscape, true)
+    }
+  }, [open])
+
+  return (
+    <SelectPrimitive.Root
+      data-slot="select"
+      open={open}
+      onOpenChange={(next) => {
+        if (next) {
+          ignoreDismissRef.current = true
+          const release = () => {
+            window.setTimeout(() => {
+              ignoreDismissRef.current = false
+            }, 0)
+          }
+          window.addEventListener("pointerup", release, { once: true, capture: true })
+          window.addEventListener("keyup", release, { once: true, capture: true })
+        } else if (ignoreDismissRef.current) {
+          return
+        }
+
+        if (!isControlled) {
+          setUncontrolledOpen(next)
+        }
+        onOpenChange?.(next)
+      }}
+      {...props}
+    />
+  )
 }
 
 function SelectGroup({
@@ -59,6 +107,8 @@ function SelectContent({
   children,
   position = "item-aligned",
   align = "center",
+  onCloseAutoFocus,
+  onPointerDownOutside,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Content>) {
   return (
@@ -70,6 +120,17 @@ function SelectContent({
         position={position}
         align={align}
         {...props}
+        onCloseAutoFocus={(event) => {
+          event.preventDefault()
+          onCloseAutoFocus?.(event)
+        }}
+        onPointerDownOutside={(event) => {
+          const target = event.target
+          if (target instanceof Element && target.closest('[data-slot="select-trigger"]')) {
+            event.preventDefault()
+          }
+          onPointerDownOutside?.(event)
+        }}
       >
         <SelectScrollUpButton />
         <SelectPrimitive.Viewport

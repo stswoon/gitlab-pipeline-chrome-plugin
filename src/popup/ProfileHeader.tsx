@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import type { ChangeEvent } from 'react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,7 +20,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -28,23 +28,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import type { StorageShape } from '@/shared/types'
 import { STATUS } from './status'
-import { selectCurrentProfile, usePopupStore } from './store'
+import { parseImportedStorage, selectCurrentProfile, usePopupStore } from './store'
 
 export function ProfileHeader() {
   const profiles = usePopupStore((state) => state.profiles)
   const currentProfileId = usePopupStore((state) => state.currentProfileId)
+  const busy = usePopupStore((state) => state.busy)
   const selectProfile = usePopupStore((state) => state.selectProfile)
   const addProfile = usePopupStore((state) => state.addProfile)
   const renameProfile = usePopupStore((state) => state.renameProfile)
   const deleteCurrentProfile = usePopupStore((state) => state.deleteCurrentProfile)
+  const saveProfilesJson = usePopupStore((state) => state.saveProfilesJson)
+  const replaceAllProfiles = usePopupStore((state) => state.replaceAllProfiles)
+  const rejectImportedFile = usePopupStore((state) => state.rejectImportedFile)
   const current = usePopupStore(selectCurrentProfile)
 
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [renameOpen, setRenameOpen] = useState(false)
   const [renameValue, setRenameValue] = useState('')
   const [deleteOpen, setDeleteOpen] = useState(false)
+  const [replaceOpen, setReplaceOpen] = useState(false)
+  const [pendingImport, setPendingImport] = useState<StorageShape | null>(null)
 
   const isLastProfile = profiles.length <= 1
+  const actionsDisabled = busy !== 'idle'
 
   const openRename = () => {
     setRenameValue(current?.name ?? '')
@@ -55,6 +64,43 @@ export function ProfileHeader() {
     if (renameProfile(renameValue)) {
       setRenameOpen(false)
     }
+  }
+
+  const onImportFile = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) {
+      return
+    }
+    void file
+      .text()
+      .then((text) => {
+        let raw: unknown
+        try {
+          raw = JSON.parse(text)
+        } catch {
+          rejectImportedFile()
+          return
+        }
+        const shape = parseImportedStorage(raw)
+        if (!shape) {
+          rejectImportedFile()
+          return
+        }
+        setPendingImport(shape)
+        setReplaceOpen(true)
+      })
+      .catch(() => {
+        rejectImportedFile()
+      })
+  }
+
+  const confirmReplace = () => {
+    if (!pendingImport) {
+      return
+    }
+    replaceAllProfiles(pendingImport)
+    setPendingImport(null)
   }
 
   return (
@@ -90,6 +136,35 @@ export function ProfileHeader() {
           Delete
         </Button>
       </div>
+      <div className="flex items-center gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={actionsDisabled}
+          onClick={saveProfilesJson}
+        >
+          Save JSON
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={actionsDisabled}
+          onClick={() => {
+            fileInputRef.current?.click()
+          }}
+        >
+          Load JSON
+        </Button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json,application/json"
+          className="hidden"
+          onChange={onImportFile}
+        />
+      </div>
       {isLastProfile ? (
         <p className="text-xs text-muted-foreground">{STATUS.keepOneProfile}</p>
       ) : null}
@@ -100,9 +175,9 @@ export function ProfileHeader() {
             <DialogTitle>Rename profile</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-2">
-            <Label htmlFor="profile-name">Name</Label>
             <Input
               id="profile-name"
+              aria-label="Profile name"
               value={renameValue}
               onChange={(event) => setRenameValue(event.target.value)}
               onKeyDown={(event) => {
@@ -149,6 +224,32 @@ export function ProfileHeader() {
               }}
             >
               Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={replaceOpen}
+        onOpenChange={(open) => {
+          setReplaceOpen(open)
+          if (!open) {
+            setPendingImport(null)
+          }
+        }}
+      >
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Replace all profiles?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Current profiles will be replaced by the file contents. Cancel leaves
+              everything as it is.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" onClick={confirmReplace}>
+              Replace
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
