@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "GitLab Pipeline Helper",
+  "description": "Fill GitLab New pipeline Inputs from query params and manage profiles.",
+  "version": "0.1.0",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "permissions": ["storage", "tabs"],
+  "host_permissions": [
+    "https://gitlab.com/*",
+    "https://*.gitlab.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://gitlab.com/*",
+        "https://*.gitlab.com/*"
+      ],
+      "js": ["src/content/index.ts"],
+      "run_at": "document_idle"
+    }
+  ]
+}
