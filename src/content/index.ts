@@ -1,6 +1,6 @@
 import { MSG_READ_FROM_PAGE } from '@/shared/messages'
 import type { ReadFromPageRequest, ReadFromPageResponse } from '@/shared/messages'
-import { isGitlabHost, isNewPipelinePath } from '@/shared/url'
+import { isNewPipelinePath } from '@/shared/url'
 import { isAbortError, isInputsLoading, pipelineRoot, readBranchDisplay } from './dom'
 import { fillInputsFromUrl } from './fill'
 import { subscribeLocationChange } from './location'
@@ -28,7 +28,7 @@ function isReadRequest(message: unknown): message is ReadFromPageRequest {
 }
 
 function handleReadFromPage(): ReadFromPageResponse {
-  if (!isGitlabHost(location.hostname) || !isNewPipelinePath(location.pathname)) {
+  if (!isNewPipelinePath(location.pathname)) {
     return { ok: false, reason: 'not-pipeline-page' }
   }
   try {

@@ -1,5 +1,5 @@
 {
-  "name": "gitlab-pipeline-chrome-plugin",
+  "name": "gitlab-pipeline-prefill-chrome-plugin",
   "private": true,
   "version": "0.1.0",
   "type": "module",

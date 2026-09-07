@@ -21,10 +21,6 @@ function isNamedBracketKey(key: string, prefix: string): boolean {
   return key.slice(prefix.length, -1).trim() !== ''
 }
 
-export function isGitlabHost(hostname: string): boolean {
-  return hostname.toLowerCase().includes('gitlab')
-}
-
 export function isNewPipelinePath(pathname: string): boolean {
   return pathname.includes('/-/pipelines/new')
 }
@@ -52,11 +48,7 @@ export function shouldActivateFill(url: string | URL): boolean {
   if (!parsed) {
     return false
   }
-  return (
-    isGitlabHost(parsed.hostname) &&
-    isNewPipelinePath(parsed.pathname) &&
-    hasSignificantQuery(parsed.search)
-  )
+  return isNewPipelinePath(parsed.pathname) && hasSignificantQuery(parsed.search)
 }
 
 export function resolveRepoBase(url: string | URL): string | null {
@@ -72,10 +64,6 @@ export function resolveRepoBase(url: string | URL): string | null {
       return null
     }
     return `${parsed.origin}${repoPath}`
-  }
-
-  if (!isGitlabHost(parsed.hostname)) {
-    return null
   }
 
   const segments = parsed.pathname.split('/').filter(Boolean)
