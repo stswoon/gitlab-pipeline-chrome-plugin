@@ -18,16 +18,16 @@
   },
   "permissions": ["storage", "tabs"],
   "host_permissions": [
-    "https://gitlab.com/*",
-    "https://*.gitlab.com/*"
+    "http://*/*",
+    "https://*/*"
   ],
   "content_scripts": [
     {
       "matches": [
-        "https://gitlab.com/*",
-        "https://*.gitlab.com/*"
+        "http://*/*",
+        "https://*/*"
       ],
-      "js": ["content.js"],
+      "js": ["gitlab-pipeline-prefill-chrome-plugin-content.js"],
       "run_at": "document_idle"
     }
   ]

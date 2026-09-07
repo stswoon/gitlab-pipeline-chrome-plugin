@@ -38,7 +38,7 @@ export default defineConfig({
         assetPrefix: './',
         cleanDistPath: {
           enable: true,
-          keep: [/content\.js$/],
+          keep: [/gitlab-pipeline-prefill-chrome-plugin-content\.js$/],
         },
         copy: [
           { from: 'public' },
@@ -64,7 +64,7 @@ export default defineConfig({
         target: 'web',
         filenameHash: false,
         filename: {
-          js: 'content.js',
+          js: 'gitlab-pipeline-prefill-chrome-plugin-content.js',
         },
         distPath: {
           js: '',
